@@ -7,7 +7,7 @@ export function Navbar() {
       <div className="container flex h-14 max-w-screen-2xl items-center justify-between px-4">
         <div className="flex items-center gap-6">
           <Link href="/" className="flex items-center space-x-2">
-            <span className="font-bold sm:inline-block">WealthPath</span>
+            <span className="font-bold sm:inline-block">WealthPlan</span>
           </Link>
           <nav className="hidden md:flex items-center gap-6 text-sm font-medium">
             <Link href="/calculators" className="transition-colors hover:text-foreground/80 text-foreground/60">
@@ -18,6 +18,9 @@ export function Navbar() {
             </Link>
             <Link href="/about" className="transition-colors hover:text-foreground/80 text-foreground/60">
               About
+            </Link>
+            <Link href="/blog" className="transition-colors hover:text-foreground/80 text-foreground/60">
+              Blog
             </Link>
           </nav>
         </div>

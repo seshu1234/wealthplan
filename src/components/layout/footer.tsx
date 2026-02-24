@@ -13,6 +13,7 @@ export function Footer() {
           <Link href="/calculators" className="hover:underline">Calculators</Link>
           <Link href="/guides" className="hover:underline">Guides</Link>
           <Link href="/about" className="hover:underline">About</Link>
+          <Link href="/blog" className="hover:underline">Blog</Link>
           <Link href="/contact" className="hover:underline">Contact</Link>
           <Link href="/privacy-policy" className="hover:underline">Privacy</Link>
           <Link href="/terms" className="hover:underline">Terms</Link>
