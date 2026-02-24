@@ -1,5 +1,6 @@
 import { CalculatorShell } from "@/components/calculator/calculator-shell";
 import { FaqSection } from "@/components/calculator/faq-section";
+import { MortgageCalc } from "@/components/calculator/mortgage-calc";
 
 export const metadata = {
   title: "Mortgage Calculator (2025) — Monthly Payment & Amortization — WealthPath",
@@ -13,9 +14,7 @@ export default function MortgageCalculatorPage() {
       description="Calculate your exact monthly mortgage payment including principal, interest, property taxes, HOA fees, and PMI. View your full amortization schedule and see exactly how much interest you will pay over the life of your loan."
     >
       {/* Calculator Component Placeholder */}
-      <div className="bg-muted w-full h-96 flex items-center justify-center rounded-lg border-2 border-dashed border-border/50 mb-12">
-        <p className="text-muted-foreground font-medium">Mortgage Calculator Interface Goes Here</p>
-      </div>
+      <MortgageCalc />
 
       <div className="prose prose-slate dark:prose-invert max-w-none prose-headings:tracking-tight prose-a:text-[hsl(var(--accent-brand))] mt-16 pt-8 border-t">
         <h2>How Mortgage Payments Are Calculated</h2>

@@ -1,6 +1,6 @@
 import { CalculatorShell } from "@/components/calculator/calculator-shell";
 import { FaqSection } from "@/components/calculator/faq-section";
-import { affiliateLinks } from "@/lib/calculators-registry"; // We can reuse or create if needed
+import { CompoundInterestCalc } from "@/components/calculator/compound-interest-calc";
 
 export const metadata = {
   title: "Compound Interest Calculator (2025) — WealthPath",
@@ -14,9 +14,7 @@ export default function CompoundInterestPage() {
       description="Calculate exactly how your savings grow when interest earns interest. Enter your starting amount, expected return rate, and time horizon to see a year-by-year breakdown of your wealth accumulation."
     >
       {/* Calculator Component Placeholder */}
-      <div className="bg-muted w-full h-96 flex items-center justify-center rounded-lg border-2 border-dashed border-border/50 mb-12">
-        <p className="text-muted-foreground font-medium">Compound Interest Calculator Interface Goes Here</p>
-      </div>
+      <CompoundInterestCalc />
 
       <div className="prose prose-slate dark:prose-invert max-w-none prose-headings:tracking-tight prose-a:text-[hsl(var(--accent-brand))] mt-16 pt-8 border-t">
         <h2>What Is Compound Interest?</h2>

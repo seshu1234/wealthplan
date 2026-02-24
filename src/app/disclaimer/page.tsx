@@ -23,45 +23,48 @@ export default function DisclaimerPage() {
       </div>
 
       <div className="prose prose-slate dark:prose-invert max-w-none prose-headings:tracking-tight prose-a:text-[hsl(var(--accent-brand))]">
-        <h2>Financial Disclaimer</h2>
-        <p>
-          The calculators, tools, and content on WealthPath are provided for <strong>educational and informational purposes only</strong>. Nothing on this website constitutes financial, investment, tax, or legal advice.
-        </p>
-        <p>
-          The results produced by our calculators are estimates based on the information you provide and the assumptions built into each tool. Actual results will vary based on market conditions, changes in tax law, individual circumstances, and many other factors outside our control.
-        </p>
+        <div className="bg-amber-50 dark:bg-amber-950/30 border-l-4 border-amber-500 p-6 my-8 rounded-r-lg">
+          <p className="m-0 text-amber-900 dark:text-amber-200 font-medium">
+            <strong>Important:</strong> All tools on WealthPath are for educational purposes only. They do not constitute financial advice.
+          </p>
+        </div>
 
-        <h2>Not a Substitute for Professional Advice</h2>
-        <p>
-          WealthPath is not a registered investment advisor, financial planner, broker, or tax professional. We strongly recommend consulting with a qualified professional before making significant financial decisions, including but not limited to:
-        </p>
-        <ul>
-          <li>Retirement planning and withdrawal strategies</li>
-          <li>Mortgage and home purchase decisions</li>
-          <li>Investment selection and portfolio allocation</li>
-          <li>Tax planning and filing</li>
-          <li>Estate planning</li>
-        </ul>
+        <section>
+          <h2>1. Financial Disclaimer</h2>
+          <p>
+            The calculators and content on WealthPath are provided as software tools to help you model various financial scenarios. They are <strong>informational and educational only</strong>.
+          </p>
+          <p>
+            WealthPath is not a financial advisor, tax professional, or broker. The results produced are estimates based on your inputs and current tax laws, but they cannot account for your specific financial situation. Actual results will vary.
+          </p>
+        </section>
 
-        <h2>Accuracy of Information</h2>
-        <p>
-          We make every effort to keep our calculators and content accurate and up to date with current IRS rules, tax brackets, and contribution limits. However, tax laws change frequently, and we cannot guarantee that all information reflects the most current regulations at any given time. Always verify important figures with the IRS website (irs.gov) or a qualified tax professional.
-        </p>
+        <section>
+          <h2>2. Affiliate & Advertising Disclosure</h2>
+          <p>
+            WealthPath is supported by advertising and affiliate relationships. We may earn a commission when you click on links or sign up for services mentioned on this site.
+          </p>
+          <p>
+            This compensation allows us to keep our calculators free for everyone. However, our reviews and calculations remain objective and are based on the mathematical models described in our methodology sections.
+          </p>
+        </section>
 
-        <h2>Investment Risk</h2>
-        <p>
-          Past investment performance referenced on this site is not a guarantee of future results. All investments carry risk, including the possible loss of principal. The return rates used in our calculators are illustrative only.
-        </p>
+        <section>
+          <h2>3. Limitation of Liability</h2>
+          <p>
+            By using this site, you agree that WealthPath and its developers are not liable for any financial losses or damages resulting from the use of our tools. 
+          </p>
+          <p>
+            <strong>Do not make major financial decisions based solely on these calculators.</strong> Always consult with a certified financial planner (CFP) or tax professional (CPA) before taking action on your finances.
+          </p>
+        </section>
 
-        <h2>Affiliate Relationships</h2>
-        <p>
-          WealthPath may earn commissions when you click affiliate links and open accounts with financial institutions we recommend. This does not affect the accuracy of our calculators or the objectivity of our content. We only recommend products and services we believe provide genuine value.
-        </p>
-
-        <h2>Limitation of Liability</h2>
-        <p>
-          WealthPath and its operators shall not be liable for any financial losses, damages, or decisions made based on information from this website.
-        </p>
+        <section>
+          <h2>4. Data Accuracy</h2>
+          <p>
+            We strive for 100% accuracy and update our tax tables annually. However, tax laws change and errors can occur. Always cross-reference important figures with official sources like <a href="https://www.irs.gov" target="_blank" rel="noopener noreferrer">IRS.gov</a>.
+          </p>
+        </section>
       </div>
     </article>
   );

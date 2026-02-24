@@ -26,24 +26,29 @@ export default function ContactPage() {
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-12">
         <div className="prose prose-slate dark:prose-invert max-w-none prose-headings:tracking-tight prose-a:text-[hsl(var(--accent-brand))]">
-          <h2>Get in Touch</h2>
-          <p>Have a question about one of our calculators? Found an error in our data? Want to suggest a new tool? We would love to hear from you.</p>
-          
-          <p>
-            <strong>For calculator accuracy issues:</strong> Please describe the calculation that seems incorrect, the inputs you used, and what result you expected. We take accuracy seriously and will investigate every report.
-          </p>
-          
-          <p>
-            <strong>For content suggestions:</strong> We are always looking to add tools that genuinely help people. If there is a calculator you wish existed, let us know.
-          </p>
-          
-          <p>
-            <strong>For business inquiries:</strong> For partnership, advertising, or press inquiries, please use the contact form.
-          </p>
-          
-          <p className="text-sm italic text-muted-foreground mt-8">
-            Note: We are unable to provide personalized financial advice. For questions about your specific financial situation, please consult a licensed financial advisor.
-          </p>
+          <section>
+            <h2>How We Can Help</h2>
+            <p>We value your feedback and are committed to maintaining the highest level of accuracy for our users.</p>
+            
+            <p>
+              <strong>Calculator Feedback:</strong> Notice a discrepancy? Please share the calculator name, your inputs, and the expected result. Our team will investigate and verify data against current IRS guidelines.
+            </p>
+            
+            <p>
+              <strong>Feature Requests:</strong> Is there a specific financial scenario we don't cover yet? We're actively expanding our toolkit and would love to hear your ideas.
+            </p>
+            
+            <p>
+              <strong>Expectations:</strong> We are a small team of financial enthusiasts. We typically respond to inquiry within <strong>2–3 business days</strong>.
+            </p>
+            
+            <div className="bg-slate-100 dark:bg-slate-900 border-l-4 border-slate-400 p-4 mt-8 rounded-r">
+              <p className="text-sm m-0 italic text-muted-foreground">
+                <strong>Please Note:</strong> We are unable to provide personalized financial, tax, or investment advice. For specific guidance, please consult 
+                a licensed professional.
+              </p>
+            </div>
+          </section>
         </div>
 
         <div>

@@ -24,48 +24,49 @@ export default function TermsPage() {
 
       <div className="prose prose-slate dark:prose-invert max-w-none prose-headings:tracking-tight prose-a:text-[hsl(var(--accent-brand))]">
         <p>
-          By using WealthPath, you agree to these Terms of Service. If you do not agree, please do not use our website or tools.
+          By accessing and using WealthPath, you accept and agree to be bound by the terms and provision of this agreement. 
         </p>
 
-        <h2>1. Educational Use Only</h2>
-        <p>
-          WealthPath provides calculators, guides, and tools for <strong>educational and informational purposes only</strong>. None of the content on this website constitutes financial, investment, legal, or tax advice. 
-        </p>
+        <section>
+          <h2>1. Limited License</h2>
+          <p>
+            WealthPath grants you a personal, non-exclusive, non-transferable, limited license to use our calculators for personal, non-commercial use only. You may not reproduce, redistribute, or use our tools for commercial purposes without prior written consent.
+          </p>
+        </section>
 
-        <h2>2. No Professional Relationship</h2>
-        <p>
-          Your use of WealthPath does not create a client-advisor relationship. We are not registered investment advisors, brokers, or tax professionals. Always consult a licensed professional before making financial decisions.
-        </p>
+        <section>
+          <h2>2. User Responsibilities</h2>
+          <p>
+            You are responsible for the accuracy of any data you input into our calculators. You understand that the outputs are only as reliable as the inputs provided. You agree not to use the site in any way that could damage, disable, or impair our services.
+          </p>
+        </section>
 
-        <h2>3. Accuracy of Information</h2>
-        <p>
-          While we strive to keep our data (tax brackets, contribution limits, etc.) accurate and up-to-date with current US laws, we cannot guarantee that all information is perfectly accurate, complete, or current. You are responsible for verifying all figures with official sources such as the IRS.
-        </p>
+        <section>
+          <h2>3. Intellectual Property</h2>
+          <p>
+            All content, including calculator logic, design, graphics, and code, is the property of WealthPath and is protected by copyright and other intellectual property laws.
+          </p>
+        </section>
 
-        <h2>4. Limitation of Liability</h2>
-        <p>
-          WealthPath and its operators shall not be liable for any direct, indirect, incidental, consequential, or punitive damages arising from your use of the website or calculators. This includes, but is not limited to, financial losses due to reliance on calculator outputs.
-        </p>
+        <section>
+          <h2>4. Disclaimer of Warranties</h2>
+          <p>
+            The service is provided "as is" and "as available." We make no warranties, expressed or implied, regarding the accuracy, reliability, or availability of the tools. Use of the site is at your own risk.
+          </p>
+        </section>
 
-        <h2>5. User Conduct</h2>
-        <p>
-          You agree to use WealthPath only for lawful purposes. You may not use automated scripts, scrapers, or bots to access or extract data from our calculators without explicit permission.
-        </p>
+        <section>
+          <h2>5. Governing Law</h2>
+          <p>
+            These terms shall be governed by and construed in accordance with the laws of the United States, without regard to its conflict of law provisions.
+          </p>
+        </section>
 
-        <h2>6. Third-Party Links and Services</h2>
-        <p>
-          Our site may contain links to third-party websites or services. We are not responsible for the content, privacy policies, or practices of any third-party sites.
-        </p>
-
-        <h2>7. Changes to Terms</h2>
-        <p>
-          We reserve the right to modify these terms at any time. Continued use of the site following any changes indicates your acceptance of the new terms.
-        </p>
-
-        <h2>8. Contact Us</h2>
-        <p>
-          If you have any questions about these Terms, please contact us via our <Link href="/contact">Contact page</Link>.
-        </p>
+        <section className="mt-12 pt-8 border-t">
+          <p>
+            If you have questions regarding these terms, please visit our <Link href="/contact">Contact page</Link>.
+          </p>
+        </section>
       </div>
     </article>
   );

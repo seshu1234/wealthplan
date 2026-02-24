@@ -1,23 +1,28 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 
 interface FAQItem {
-  q: string;
-  a: string;
+  question: string;
+  answer: string;
 }
 
-export function FaqSection({ items }: { items: FAQItem[] }) {
+interface FaqSectionProps {
+  items: FAQItem[];
+  title?: string;
+}
+
+export function FaqSection({ items, title = "Frequently Asked Questions" }: FaqSectionProps) {
   if (!items || items.length === 0) return null;
   
   return (
     <Card>
       <CardHeader>
-        <CardTitle>Frequently Asked Questions</CardTitle>
+        <CardTitle>{title}</CardTitle>
       </CardHeader>
       <CardContent className="space-y-6">
         {items.map((item, idx) => (
           <div key={idx} className="space-y-2">
-            <h3 className="font-semibold text-foreground">{item.q}</h3>
-            <p className="text-sm text-muted-foreground">{item.a}</p>
+            <h3 className="font-semibold text-foreground">{item.question}</h3>
+            <p className="text-sm text-muted-foreground">{item.answer}</p>
           </div>
         ))}
       </CardContent>
