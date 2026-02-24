@@ -10,6 +10,8 @@ export function Footer() {
           </p>
         </div>
         <nav className="flex items-center gap-4 text-sm font-medium text-muted-foreground">
+          <Link href="/calculators" className="hover:underline">Calculators</Link>
+          <Link href="/guides" className="hover:underline">Guides</Link>
           <Link href="/about" className="hover:underline">About</Link>
           <Link href="/contact" className="hover:underline">Contact</Link>
           <Link href="/privacy-policy" className="hover:underline">Privacy</Link>

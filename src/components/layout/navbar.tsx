@@ -9,9 +9,12 @@ export function Navbar() {
           <Link href="/" className="flex items-center space-x-2">
             <span className="font-bold sm:inline-block">WealthPath</span>
           </Link>
-          <nav className="hidden md:flex items-center gap-6 text-sm">
+          <nav className="hidden md:flex items-center gap-6 text-sm font-medium">
             <Link href="/calculators" className="transition-colors hover:text-foreground/80 text-foreground/60">
               Calculators
+            </Link>
+            <Link href="/guides" className="transition-colors hover:text-foreground/80 text-foreground/60">
+              Guides
             </Link>
             <Link href="/about" className="transition-colors hover:text-foreground/80 text-foreground/60">
               About
