@@ -90,11 +90,11 @@ export function AdminHeader({ user, role }: AdminHeaderProps) {
   const handleSignOut = async () => {
     try {
       await supabase.auth.signOut()
-      router.push('/admin/login')
+      router.push('/auth/login')
       router.refresh()
       toast.success('Signed out successfully')
     } catch {
-      toast.error('Invalid email or password')
+      toast.error('Error signing out')
     }
   }
 

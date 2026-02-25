@@ -1,5 +1,4 @@
-// app/admin/layout.tsx
-import { redirect } from 'next/navigation'
+// app/dashboard/layout.tsx
 import { createServerClient } from '@supabase/auth-helpers-nextjs'
 import { cookies } from 'next/headers'
 import { AdminSidebar } from '@/components/admin/AdminSidebar'
@@ -33,20 +32,17 @@ export default async function AdminLayout({
   )
   const { data: { session } } = await supabase.auth.getSession()
 
-  if (!session) {
-    redirect('/admin/login')
-  }
+  // We don't need to redirect here as middleware handles it.
+  // But we need the session and user data for the header.
+  if (!session) return null
 
-  // Check if user is admin
   const { data: adminUser } = await supabase
     .from('admin_users')
     .select('role')
     .eq('id', session.user.id)
     .single()
 
-  if (!adminUser) {
-    redirect('/')
-  }
+  if (!adminUser) return null
 
   return (
     <div className="min-h-screen bg-background">
