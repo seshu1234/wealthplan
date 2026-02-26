@@ -46,6 +46,7 @@ export function SignupForm() {
     try {
       // Sign up directly from the browser — no server-side fetch to Supabase
       const supabase = createClient()
+      console.log('Attempting sign-up for:', data.email)
       const { data: authData, error: authError } = await supabase.auth.signUp({
         email: data.email,
         password: data.password,
@@ -53,6 +54,8 @@ export function SignupForm() {
           data: { full_name: data.name },
         },
       })
+
+      console.log('Supabase signup response received:', { success: !!authData.user, error: authError?.message })
 
       if (authError) {
         setError(authError.message)
@@ -67,6 +70,7 @@ export function SignupForm() {
 
       // Email confirmation required — no session yet
       if (!authData.session) {
+        console.log('Email confirmation required, redirecting to verify page')
         setSuccess(true)
         router.push('/auth/verify-email')
         return
@@ -74,18 +78,21 @@ export function SignupForm() {
 
       // Email confirmation disabled — Supabase returned a session immediately.
       // Exchange the user ID for our custom JWT cookies.
+      console.log('Exchanging Supabase ID for JWT cookies...')
       const res = await fetch('/api/auth/exchange', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ userId: authData.user!.id }),
       })
 
+      console.log('Exchange response status:', res.status)
       const json = await res.json()
       if (!res.ok) {
         setError(json.error || 'Signup failed')
         return
       }
 
+      console.log('Signup successful, redirecting to dashboard...')
       setSuccess(true)
       router.push('/dashboard')
       router.refresh()

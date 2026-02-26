@@ -41,10 +41,13 @@ export function LoginForm() {
     try {
       // Sign in directly from the browser — no server-side fetch to Supabase
       const supabase = createClient()
+      console.log('Attempting sign-in with password for:', data.email)
       const { data: authData, error: authError } = await supabase.auth.signInWithPassword({
         email: data.email,
         password: data.password,
       })
+
+      console.log('Supabase auth response received:', { success: !!authData.user, error: authError?.message })
 
       if (authError || !authData.user) {
         setError(authError?.message || 'Invalid email or password')
@@ -52,18 +55,21 @@ export function LoginForm() {
       }
 
       // Exchange the Supabase user ID for our custom JWT cookies (server-side, no outbound call)
+      console.log('Exchanging Supabase ID for JWT cookies...')
       const res = await fetch('/api/auth/exchange', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ userId: authData.user.id }),
       })
 
+      console.log('Exchange response status:', res.status)
       const json = await res.json()
       if (!res.ok) {
         setError(json.error || 'Login failed')
         return
       }
 
+      console.log('Login successful, redirecting to dashboard...')
       router.push('/dashboard')
       router.refresh()
     } catch (err) {
