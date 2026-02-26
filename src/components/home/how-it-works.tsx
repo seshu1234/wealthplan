@@ -7,18 +7,18 @@ import { Card, CardContent } from "@/components/ui/card";
 const steps = [
   {
     icon: <Calculator className="h-10 w-10 text-[hsl(var(--accent-brand))]" />,
-    title: "1. Choose a Tool",
-    description: "Select from 15+ specialized financial calculators for your specific need.",
+    title: "1. Select Your Strategy",
+    description: "Choose from 15+ specialized tools built to solve your unique financial challenge.",
   },
   {
     icon: <MousePointerClick className="h-10 w-10 text-[hsl(var(--accent-brand))]" />,
-    title: "2. Input Your Data",
-    description: "Enter your numbers securely. Your data never leaves your browser.",
+    title: "2. Input with Confidence",
+    description: "Enter your numbers in a 100% private, sandbox environment. No data ever leaves your device.",
   },
   {
     icon: <TrendingUp className="h-10 w-10 text-[hsl(var(--accent-brand))]" />,
-    title: "3. See Your Future",
-    description: "Get instant, US tax-accurate projections and beautiful charts.",
+    title: "3. Master Your Roadmap",
+    description: "Get instant, tax-aware projections that reveal exactly how to optimize your wealth.",
   },
 ];
 

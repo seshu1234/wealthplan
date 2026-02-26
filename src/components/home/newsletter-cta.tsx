@@ -25,11 +25,11 @@ export function NewsletterCTA() {
           </div>
 
           <div className="relative z-10 max-w-2xl mx-auto space-y-8">
-            <h2 className="text-3xl md:text-5xl font-bold tracking-tight mb-4">
-              Get Smarter About Your Money
+            <h2 className="text-3xl md:text-5xl font-black tracking-tight mb-4">
+              Join 10,000+ Wealth Architects
             </h2>
-            <p className="/80 text-lg md:text-xl leading-relaxed">
-              Join thousands of others receiving one actionable financial strategy each week. No fluff, just math and methods that work.
+            <p className="opacity-90 text-lg md:text-xl leading-relaxed font-medium">
+              Get one actionable financial blueprint delivered to your inbox each week. No fluff—just the math and methods that build lasting wealth.
             </p>
             
             <form className="flex flex-col sm:flex-row gap-3 max-w-md mx-auto" onSubmit={(e) => e.preventDefault()}>

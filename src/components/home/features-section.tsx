@@ -4,18 +4,18 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 const features = [
   {
     icon: <ShieldCheck className="h-8 w-8 text-[hsl(var(--accent-brand))]" />,
-    title: "US Tax Rules Built-In",
-    description: "Our calculators are hardcoded with the latest IRS tax brackets, standard deductions, and retirement contribution limits (401k, IRA, HSA) for precise US-focused results.",
+    title: "Precision You Can Trust",
+    description: "Built for the US reality. IRS-ready math (401k, IRA, HSA) ensures your roadmap is grounded in actual tax laws, not generic guesses.",
   },
   {
     icon: <TrendingUp className="h-8 w-8 text-[hsl(var(--accent-brand))]" />,
-    title: "100% Free & Private",
-    description: "No accounts, no paywalls, and no data tracking. All calculations happen locally in your browser so your financial data never leaves your device.",
+    title: "Your Data, Your Future",
+    description: "Complete financial privacy. All calculations happen locally on your device—no accounts, no trackers, and zero risk to your data.",
   },
   {
     icon: <BookOpen className="h-8 w-8 text-[hsl(var(--accent-brand))]" />,
-    title: "Educational Insights",
-    description: "More than just numbers. Every calculator comes with step-by-step methodology explaining exactly how the math works and how you can optimize your finances.",
+    title: "Actionable Intelligence",
+    description: "Beyond just numbers. Every tool delivers a strategic 'Why' and step-by-step guidance on how to optimize your outcome immediately.",
   },
 ];
 

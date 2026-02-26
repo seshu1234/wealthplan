@@ -68,12 +68,19 @@ export function executeCalculation(
   config: CalculatorConfig,
   values: Record<string, number | string>
 ): CalculationResult {
-  const { logic } = config;
+  const logic = config.logic || { type: 'formula', formula: '' };
   const outputs: Record<string, number | string> = {};
   const charts: Record<string, Record<string, number | string>[]> = {};
 
-  const vars = Object.keys(values);
-  const args = vars.map(v => values[v]);
+  if (!config.outputs) return { outputs, charts };
+
+  // context starting with inputs, ensuring ALL config inputs are present even if missing from 'values'
+  const currentContext: Record<string, number | string> = { ...values };
+  config.inputs?.forEach(input => {
+    if (currentContext[input.id] === undefined) {
+      currentContext[input.id] = input.defaultValue ?? 0;
+    }
+  });
 
   // 1. Calculate Outputs
   if (logic.type === 'formula') {
@@ -82,11 +89,22 @@ export function executeCalculation(
       if (!formula) continue;
 
       try {
+        const vars = Object.keys(currentContext);
+        const args = vars.map(v => currentContext[v]);
         const fn = new Function(...vars, `return ${formula}`);
         const result = fn(...args);
-        outputs[output.id] = typeof result === 'number' && isFinite(result) ? result : 0;
-      } catch {
+        
+        const finalVal = typeof result === 'number' && isFinite(result) ? result : 0;
+        outputs[output.id] = finalVal;
+        
+        // Add THIS output to context so LATER outputs can use it!
+        // Trim ID to prevent ReferenceErrors if DB has trailing spaces
+        currentContext[output.id.trim()] = finalVal;
+      } catch (err) {
+        console.error(`Calculation Error in output [${output.id}]:`, err, { formula });
         outputs[output.id] = 0;
+        // MUST add to context even on failure to prevent ReferenceErrors in dependent formulas
+        currentContext[output.id] = 0;
       }
     }
   }
@@ -101,13 +119,14 @@ export function executeCalculation(
       for (let i = 1; i <= loopMax; i++) {
         const point: Record<string, number | string> = { [chart.loopKey]: i };
         
-        // Context for formula: original inputs + 'i' as current loop value
-        const loopVars = [...vars, 'i'];
+        // Context for formula: original inputs + sequential results + 'i'
+        const loopVars = [...Object.keys(currentContext), 'i'];
+        const loopArgs = [...Object.values(currentContext), i];
         
         for (const s of chart.series) {
           try {
             const fn = new Function(...loopVars, `return ${s.formula}`);
-            const result = fn(...args, i);
+            const result = fn(...loopArgs);
             point[s.dataKey] = typeof result === 'number' && isFinite(result) ? Math.round(result) : 0;
           } catch {
             point[s.dataKey] = 0;

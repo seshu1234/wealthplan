@@ -49,15 +49,15 @@ export function TrustSection() {
             transition={{ duration: 0.6 }}
             className="space-y-6"
           >
-            <h2 className="text-3xl font-bold tracking-tight">Built for Accuracy and Privacy</h2>
+            <h2 className="text-3xl font-bold tracking-tight">Financial Confidence, Built In</h2>
             <p className="text-muted-foreground text-lg leading-relaxed">
-              We update our tax brackets, contribution limits, and rate tables every January. Outdated numbers produce wrong answers — and wrong answers cost you real money.
+              We update our logic and tax tables every January. Outdated math produces wrong answers — and wrong answers cost you real money. We ensure your roadmap is accurate and your privacy is absolute.
             </p>
             <ul className="space-y-3">
               {[
-                "No account creation required",
-                "Calculations happen instantly in-browser",
-                "Designed exclusively for the US system"
+                "Absolute Privacy: No accounts, no identity tracking.",
+                "Sovereign Data: Your finances never leave your device.",
+                "US-Specific Logic: IRS-aligned math for local precision."
               ].map((item, i) => (
                 <li key={i} className="flex items-center gap-3 text-foreground font-medium">
                   <CheckCircle2 className="h-5 w-5 text-[hsl(var(--accent-brand))]" />

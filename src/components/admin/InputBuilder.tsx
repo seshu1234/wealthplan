@@ -90,14 +90,60 @@ export function InputBuilder({ value = [], onChange }: InputBuilderProps) {
               </div>
 
               <div className="space-y-1.5">
-                <Label className="text-xs">Unit/Suffix</Label>
+                <Label className="text-xs">Unit</Label>
                 <Input 
                   value={field.unit} 
                   onChange={(e) => updateField(field.id, { unit: e.target.value })}
-                  placeholder="e.g., $, %, yrs"
+                  placeholder="$, %, yrs"
                   className="h-8"
                 />
               </div>
+
+              <div className="space-y-1.5">
+                <Label className="text-xs">Default Value</Label>
+                <Input 
+                  type="number"
+                  value={field.defaultValue} 
+                  onChange={(e) => updateField(field.id, { defaultValue: parseFloat(e.target.value) || 0 })}
+                  placeholder="0"
+                  className="h-8"
+                />
+              </div>
+
+              {field.type === 'slider' && (
+                <>
+                  <div className="space-y-1.5">
+                    <Label className="text-xs">Min</Label>
+                    <Input 
+                      type="number"
+                      value={field.min} 
+                      onChange={(e) => updateField(field.id, { min: parseFloat(e.target.value) || 0 })}
+                      placeholder="0"
+                      className="h-8"
+                    />
+                  </div>
+                  <div className="space-y-1.5">
+                    <Label className="text-xs">Max</Label>
+                    <Input 
+                      type="number"
+                      value={field.max} 
+                      onChange={(e) => updateField(field.id, { max: parseFloat(e.target.value) || 0 })}
+                      placeholder="100"
+                      className="h-8"
+                    />
+                  </div>
+                  <div className="space-y-1.5">
+                    <Label className="text-xs">Step</Label>
+                    <Input 
+                      type="number"
+                      value={field.step} 
+                      onChange={(e) => updateField(field.id, { step: parseFloat(e.target.value) || 1 })}
+                      placeholder="1"
+                      className="h-8"
+                    />
+                  </div>
+                </>
+              )}
             </div>
 
             <Button 

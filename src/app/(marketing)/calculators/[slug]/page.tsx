@@ -70,7 +70,7 @@ export default async function DynamicCalculatorPage({
       )}
 
       {/* Full Interactive Experience (Client Side) */}
-      <DynamicCalculator config={calc} />
+      <DynamicCalculator config={{ ...calc.config, content: calc.content }} />
     </CalculatorShell>
   );
 }
