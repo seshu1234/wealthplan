@@ -1,6 +1,4 @@
-// app/dashboard/calculators/page.tsx
-import { createServerClient } from '@supabase/auth-helpers-nextjs'
-import { cookies } from 'next/headers'
+import { createAdminClient } from '@/lib/supabase/admin'
 import {
   Table,
   TableBody,
@@ -36,27 +34,22 @@ interface Calculator {
   }
 }
 
+export const dynamic = 'force-dynamic'
+
 export default async function CalculatorsPage() {
-  const cookieStore = await cookies()
-  const supabase = createServerClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
-    {
-      cookies: {
-        getAll() {
-          return cookieStore.getAll()
-        },
-      },
-    }
-  )
+  const supabase = createAdminClient()
   
-  const { data: calculators } = await supabase
+  console.log('Fetching calculators from dashboard...')
+  const { data: calculators, error } = await supabase
     .from('calculators')
-    .select(`
-      *,
-      author:author_id (full_name)
-    `)
+    .select('*')
     .order('created_at', { ascending: false })
+
+  if (error) {
+    console.error('Database error fetching calculators:', error)
+  } else {
+    console.log(`Successfully fetched ${calculators?.length || 0} calculators`)
+  }
 
   return (
     <div className="space-y-8">
