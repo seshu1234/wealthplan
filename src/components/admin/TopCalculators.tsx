@@ -1,4 +1,4 @@
-// components/admin/TopCalculators.tsx
+// components/dashboard/TopCalculators.tsx
 import {
   Table,
   TableBody,

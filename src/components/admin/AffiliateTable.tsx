@@ -1,4 +1,4 @@
-// components/admin/AffiliateTable.tsx
+// components/dashboard/AffiliateTable.tsx
 import {
   Table,
   TableBody,

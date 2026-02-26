@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect, use } from 'react'
 import { useRouter } from 'next/navigation'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useForm } from 'react-hook-form'
@@ -8,7 +8,6 @@ import * as z from 'zod'
 import {
   Card,
   CardContent,
-  CardDescription,
   CardHeader,
   CardTitle,
 } from '@/components/ui/card'
@@ -31,8 +30,9 @@ import {
 } from '@/components/ui/select'
 import { Textarea } from '@/components/ui/textarea'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
-import { CalculatorPreview } from '@/components/admin/CalculatorPreview'
 import { toast } from 'sonner'
+import { ArrowLeft, Save } from 'lucide-react'
+import Link from 'next/link'
 import { InputBuilder } from '@/components/admin/InputBuilder'
 import { LogicBuilder } from '@/components/admin/LogicBuilder'
 import { OutputBuilder } from '@/components/admin/OutputBuilder'
@@ -73,9 +73,11 @@ type CalculatorFormValues = {
   content?: CalculatorContent
 }
 
-export default function NewCalculatorPage() {
+export default function EditCalculatorPage({ params }: { params: Promise<{ id: string }> }) {
+  const { id } = use(params)
   const router = useRouter()
   const [activeTab, setActiveTab] = useState('basic')
+  const [loading, setLoading] = useState(true)
 
   const form = useForm<CalculatorFormValues>({
     resolver: zodResolver(calculatorSchema),
@@ -94,26 +96,46 @@ export default function NewCalculatorPage() {
         outputs: [],
         charts: [],
       },
-      content: {
-        intro: '',
-        howToUse: [],
-        explanation: { title: '', body: '' },
-        deepDive: { title: '', body: '' },
-        keyNumbers: [],
-        faq: [],
-      },
     },
   })
+
+  useEffect(() => {
+    async function loadCalculator() {
+      try {
+        const res = await fetch(`/api/calculators/${id}`)
+        if (!res.ok) throw new Error('Failed to load')
+        const data = await res.json()
+
+        form.reset({
+          title: data.title,
+          slug: data.slug,
+          description: data.description || '',
+          category: data.category as CalculatorFormValues['category'],
+          status: data.status as CalculatorFormValues['status'],
+          seo_title: data.seo_title || '',
+          seo_description: data.seo_description || '',
+          config: data.config || { inputs: [], logic: { type: 'formula' }, outputs: [], charts: [] },
+          content: data.content || { intro: '', howToUse: [], explanation: { title: '', body: '' }, deepDive: { title: '', body: '' }, keyNumbers: [], faq: [] },
+        })
+      } catch {
+        toast.error('Failed to load calculator')
+      } finally {
+        setLoading(false)
+      }
+    }
+
+    loadCalculator()
+  }, [id, form])
 
   const [submitting, setSubmitting] = useState(false)
 
   async function onSubmit(values: CalculatorFormValues) {
     setSubmitting(true)
-    const toastId = toast.loading('Creating calculator...')
+    const toastId = toast.loading('Saving changes...')
 
     try {
-      const res = await fetch('/api/calculators', {
-        method: 'POST',
+      const res = await fetch(`/api/calculators/${id}`, {
+        method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(values),
       })
@@ -124,15 +146,15 @@ export default function NewCalculatorPage() {
         if (res.status === 409) {
           toast.error('A calculator with this slug already exists. Choose a different URL slug.', { id: toastId })
         } else if (res.status === 401) {
-          toast.error('You must be logged in to create a calculator.', { id: toastId })
+          toast.error('You must be logged in.', { id: toastId })
         } else {
-          toast.error(`Failed to create: ${data.error || 'Unknown error'}`, { id: toastId })
+          toast.error(`Failed to save: ${data.error || 'Unknown error'}`, { id: toastId })
         }
         return
       }
 
-      toast.success('Calculator created successfully!', { id: toastId })
-      router.push(`/dashboard/calculators/${data.id}/edit`)
+      toast.success('Calculator saved successfully!', { id: toastId })
+      router.refresh()
     } catch {
       toast.error('Network error \u2014 please try again', { id: toastId })
     } finally {
@@ -143,17 +165,37 @@ export default function NewCalculatorPage() {
   const availableVariables = form.watch('config.inputs')?.map(i => i.id) || []
   const inputLabels = form.watch('config.inputs')?.map(i => i.label) || []
 
+  if (loading) {
+    return <div className="flex items-center justify-center min-h-[400px]">Loading...</div>
+  }
+
   return (
     <div className="space-y-8">
-      <div>
-        <h1 className="text-3xl font-bold">Create New Calculator</h1>
-        <p className="text-muted-foreground">Build a new dynamic calculator for your users</p>
+      <div className="flex items-center justify-between">
+        <div className="flex items-center gap-4">
+          <Link href="/dashboard/calculators">
+            <Button variant="outline" size="icon">
+              <ArrowLeft className="h-4 w-4" />
+            </Button>
+          </Link>
+          <div>
+            <h1 className="text-3xl font-bold">Edit Calculator</h1>
+            <p className="text-muted-foreground">{form.watch('title')}</p>
+          </div>
+        </div>
+        <Button onClick={form.handleSubmit(onSubmit)} disabled={submitting}>
+          {submitting ? 'Saving...' : (
+            <>
+              <Save className="h-4 w-4 mr-2" /> Save Changes
+            </>
+          )}
+        </Button>
       </div>
 
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
           <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-8">
-            <TabsList className="grid w-full grid-cols-8">
+            <TabsList className="grid w-full grid-cols-7 h-12">
               <TabsTrigger value="basic">Basic Info</TabsTrigger>
               <TabsTrigger value="inputs">Inputs</TabsTrigger>
               <TabsTrigger value="logic">Logic</TabsTrigger>
@@ -161,14 +203,12 @@ export default function NewCalculatorPage() {
               <TabsTrigger value="charts">Charts</TabsTrigger>
               <TabsTrigger value="content">Content</TabsTrigger>
               <TabsTrigger value="seo">SEO</TabsTrigger>
-              <TabsTrigger value="preview">Preview</TabsTrigger>
             </TabsList>
 
             <TabsContent value="basic" className="space-y-8">
               <Card>
                 <CardHeader>
                   <CardTitle>Basic Information</CardTitle>
-                  <CardDescription>Set up the fundamental details for your calculator</CardDescription>
                 </CardHeader>
                 <CardContent className="space-y-4">
                   <FormField
@@ -213,7 +253,7 @@ export default function NewCalculatorPage() {
                         <FormLabel>Description</FormLabel>
                         <FormControl>
                           <Textarea 
-                            placeholder="Brief description of what this calculator does..." 
+                            placeholder="Brief description..." 
                             className="resize-none"
                             {...field}
                           />
@@ -232,7 +272,7 @@ export default function NewCalculatorPage() {
                         <Select onValueChange={field.onChange} defaultValue={field.value}>
                           <FormControl>
                             <SelectTrigger>
-                              <SelectValue placeholder="Select a category" />
+                              <SelectValue />
                             </SelectTrigger>
                           </FormControl>
                           <SelectContent>
@@ -263,7 +303,7 @@ export default function NewCalculatorPage() {
                         <FormControl>
                           <Select onValueChange={field.onChange} defaultValue={field.value}>
                             <SelectTrigger className="w-[180px]">
-                              <SelectValue placeholder="Select status" />
+                              <SelectValue />
                             </SelectTrigger>
                             <SelectContent>
                               <SelectItem value="draft">Draft</SelectItem>
@@ -283,7 +323,6 @@ export default function NewCalculatorPage() {
               <Card>
                 <CardHeader>
                   <CardTitle>Field Definitions</CardTitle>
-                  <CardDescription>Define the data points users will enter.</CardDescription>
                 </CardHeader>
                 <CardContent>
                   <FormField
@@ -306,7 +345,6 @@ export default function NewCalculatorPage() {
               <Card>
                 <CardHeader>
                   <CardTitle>Calculation Logic</CardTitle>
-                  <CardDescription>Define how the results are computed.</CardDescription>
                 </CardHeader>
                 <CardContent>
                   <FormField
@@ -333,7 +371,6 @@ export default function NewCalculatorPage() {
               <Card>
                 <CardHeader>
                   <CardTitle>Result Cards</CardTitle>
-                  <CardDescription>Format how the calculated data is shown.</CardDescription>
                 </CardHeader>
                 <CardContent>
                   <FormField
@@ -356,7 +393,6 @@ export default function NewCalculatorPage() {
               <Card>
                 <CardHeader>
                   <CardTitle>Chart Configuration</CardTitle>
-                  <CardDescription>Visualize results over time (e.g. growth charts).</CardDescription>
                 </CardHeader>
                 <CardContent>
                   <FormField
@@ -383,7 +419,6 @@ export default function NewCalculatorPage() {
               <Card>
                 <CardHeader>
                   <CardTitle>Page Content</CardTitle>
-                  <CardDescription>Write SEO-optimized content sections for this calculator page.</CardDescription>
                 </CardHeader>
                 <CardContent>
                   <FormField
@@ -410,7 +445,6 @@ export default function NewCalculatorPage() {
               <Card>
                 <CardHeader>
                   <CardTitle>SEO Settings</CardTitle>
-                  <CardDescription>Optimize your calculator for search engines</CardDescription>
                 </CardHeader>
                 <CardContent className="space-y-4">
                   <FormField
@@ -420,7 +454,7 @@ export default function NewCalculatorPage() {
                       <FormItem>
                         <FormLabel>SEO Title</FormLabel>
                         <FormControl>
-                          <Input placeholder="Title for search results" {...field} />
+                          <Input {...field} />
                         </FormControl>
                         <FormMessage />
                       </FormItem>
@@ -434,11 +468,7 @@ export default function NewCalculatorPage() {
                       <FormItem>
                         <FormLabel>SEO Description</FormLabel>
                         <FormControl>
-                          <Textarea 
-                            placeholder="Description for search results" 
-                            className="resize-none"
-                            {...field}
-                          />
+                          <Textarea className="resize-none" {...field} />
                         </FormControl>
                         <FormMessage />
                       </FormItem>
@@ -447,25 +477,7 @@ export default function NewCalculatorPage() {
                 </CardContent>
               </Card>
             </TabsContent>
-
-            <TabsContent value="preview">
-              <CalculatorPreview config={form.watch('config')} />
-            </TabsContent>
           </Tabs>
-
-          <div className="flex justify-between">
-            <Button variant="outline" type="button" onClick={() => router.back()}>
-              Cancel
-            </Button>
-            <div className="space-x-4">
-              <Button variant="outline" type="button" onClick={() => setActiveTab('preview')}>
-                Preview Calculator
-              </Button>
-              <Button type="submit" disabled={submitting}>
-                {submitting ? 'Creating...' : 'Create Calculator'}
-              </Button>
-            </div>
-          </div>
         </form>
       </Form>
     </div>

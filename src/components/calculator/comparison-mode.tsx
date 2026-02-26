@@ -4,7 +4,37 @@ import { useState, useMemo } from 'react'
 import { SliderField } from '@/components/calculator/slider-field'
 import { GrowthChart } from '@/components/calculator/growth-chart'
 import { Button } from '@/components/ui/button'
-import { calculateCompoundInterest } from '@/lib/calculations/compound-interest'
+// Inlined compound interest logic to resolve build errors after migration
+function calculateScenario(inputs: Scenario) {
+  const { principal, monthlyContribution, annualRate, years } = inputs
+  const rate = annualRate / 100
+  const n = 12
+  let currentBalance = principal
+  let totalContributions = principal
+  let totalInterest = 0
+  const yearlySchedule = [{ year: 0, balance: principal }]
+
+  for (let year = 1; year <= years; year++) {
+    for (let period = 0; period < n; period++) {
+      const interestEarned = currentBalance * (rate / n)
+      currentBalance += interestEarned
+      totalInterest += interestEarned
+      currentBalance += monthlyContribution
+      totalContributions += monthlyContribution
+    }
+    yearlySchedule.push({
+      year,
+      balance: Math.round(currentBalance),
+    })
+  }
+
+  return {
+    finalBalance: Math.round(currentBalance),
+    totalContributions: Math.round(totalContributions),
+    totalInterest: Math.round(totalInterest),
+    yearlySchedule,
+  }
+}
 import { formatCurrency } from '@/lib/format'
 import { BarChart3, X } from 'lucide-react'
 
@@ -47,8 +77,8 @@ export function ComparisonMode() {
   const [scenarioB, setB] = useState<Scenario>({ ...defaults, monthlyContribution: 800, annualRate: 8 })
   const [isOpen, setIsOpen] = useState(false)
 
-  const resultsA = useMemo(() => calculateCompoundInterest({ ...scenarioA, frequency: 'monthly' }), [scenarioA])
-  const resultsB = useMemo(() => calculateCompoundInterest({ ...scenarioB, frequency: 'monthly' }), [scenarioB])
+  const resultsA = useMemo(() => calculateScenario(scenarioA), [scenarioA])
+  const resultsB = useMemo(() => calculateScenario(scenarioB), [scenarioB])
 
   const mergedChart = useMemo(() => {
     return resultsA.yearlySchedule.map((d, i) => ({

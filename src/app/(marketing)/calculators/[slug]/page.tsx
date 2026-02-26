@@ -1,27 +1,76 @@
 import { notFound } from "next/navigation";
-import { CALCULATORS_REGISTRY } from "@/lib/calculators-registry";
+import { Metadata } from "next";
+import { createClient } from "@/lib/supabase/server";
+import { CalculatorShell } from "@/components/calculator/calculator-shell";
+import { FaqSection } from "@/components/calculator/faq-section";
+import { SchemaMarkup } from "@/components/calculator/schema-markup";
+import { CalcArticle, DataTable } from "@/components/calculator/calc-article";
+import { DynamicCalculator } from "@/components/calculator/dynamic-calculator";
 
-export function generateStaticParams() {
-  return CALCULATORS_REGISTRY.map((calc) => ({
-    slug: calc.slug,
-  }));
+// Server-side data fetching
+async function getCalculator(slug: string) {
+  const supabase = await createClient();
+  const { data, error } = await supabase
+    .from("calculators")
+    .select("*")
+    .eq("slug", slug)
+    .eq("status", "published")
+    .single();
+
+  if (error || !data) return null;
+  return data;
 }
 
-export default async function CalculatorPage({ params }: { params: Promise<{ slug: string }> }) {
+// Dynamic metadata from DB
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ slug: string }>;
+}): Promise<Metadata> {
   const { slug } = await params;
-  const calculatorMeta = CALCULATORS_REGISTRY.find((c) => c.slug === slug);
+  const calc = (await getCalculator(slug)) as any;
+  if (!calc) return { title: "Calculator Not Found" };
 
-  if (!calculatorMeta) {
-    notFound();
-  }
+  return {
+    title: calc.seo_title || `${calc.title} — WealthPlan`,
+    description: (calc.seo_description || calc.description) ?? undefined,
+    openGraph: {
+      title: calc.seo_title || calc.title,
+      description: (calc.seo_description || calc.description) ?? undefined,
+      ...(calc.og_image_url ? { images: [calc.og_image_url] } : {}),
+    },
+  };
+}
+
+export default async function DynamicCalculatorPage({
+  params,
+}: {
+  params: Promise<{ slug: string }>;
+}) {
+  const { slug } = await params;
+  const calc = (await getCalculator(slug)) as any;
+
+  if (!calc) notFound();
+
+  const content = (calc.content || {}) as any;
 
   return (
-    <div className="max-w-4xl mx-auto px-4 py-12 text-center">
-      <h1 className="text-3xl font-bold tracking-tight mb-4">{calculatorMeta.name}</h1>
-      <p className="text-muted-foreground mb-8">{calculatorMeta.description}</p>
-      <div className="p-12 border border-dashed rounded-lg bg-muted/30">
-        <p>Implementation for {calculatorMeta.id} goes here.</p>
-      </div>
-    </div>
+    <CalculatorShell
+      calculatorId={calc.slug}
+      title={calc.title}
+      description={calc.description || ""}
+    >
+      {/* FAQ Schema (Server Side) */}
+      {content.faq && content.faq.length > 0 && (
+        <SchemaMarkup
+          type="FAQPage"
+          url={`https://wealthplan.com/calculators/${calc.slug}`}
+          data={content.faq}
+        />
+      )}
+
+      {/* Full Interactive Experience (Client Side) */}
+      <DynamicCalculator config={calc} />
+    </CalculatorShell>
   );
 }

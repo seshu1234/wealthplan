@@ -1,4 +1,4 @@
-// components/admin/RecentActivity.tsx
+// components/dashboard/RecentActivity.tsx
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 
 const activities = [

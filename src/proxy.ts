@@ -2,7 +2,7 @@ import { type NextRequest } from 'next/server'
 import { updateSession } from '@/lib/supabase/middleware'
 
 export default async function proxy(request: NextRequest) {
-  console.log('Proxy intercepting:', request.nextUrl.pathname)
+// console.log('Proxy intercepting:', request.nextUrl.pathname)
   return await updateSession(request)
 }
 

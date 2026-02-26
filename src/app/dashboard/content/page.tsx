@@ -62,22 +62,22 @@ export default async function ContentPage({
       <Tabs defaultValue={activeType}>
         <TabsList className="grid w-full grid-cols-6">
           <TabsTrigger value="all" asChild>
-            <Link href="/admin/content?type=all">All</Link>
+            <Link href="/dashboard/content?type=all">All</Link>
           </TabsTrigger>
           <TabsTrigger value="blog" asChild>
-            <Link href="/admin/content?type=blog">Blog</Link>
+            <Link href="/dashboard/content?type=blog">Blog</Link>
           </TabsTrigger>
           <TabsTrigger value="guide" asChild>
-            <Link href="/admin/content?type=guide">Guides</Link>
+            <Link href="/dashboard/content?type=guide">Guides</Link>
           </TabsTrigger>
           <TabsTrigger value="strategy" asChild>
-            <Link href="/admin/content?type=strategy">Strategies</Link>
+            <Link href="/dashboard/content?type=strategy">Strategies</Link>
           </TabsTrigger>
           <TabsTrigger value="compare" asChild>
-            <Link href="/admin/content?type=compare">Comparisons</Link>
+            <Link href="/dashboard/content?type=compare">Comparisons</Link>
           </TabsTrigger>
           <TabsTrigger value="state" asChild>
-            <Link href="/admin/content?type=state">State Guides</Link>
+            <Link href="/dashboard/content?type=state">State Guides</Link>
           </TabsTrigger>
         </TabsList>
       </Tabs>

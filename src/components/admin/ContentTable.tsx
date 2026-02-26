@@ -1,4 +1,4 @@
-// components/admin/ContentTable.tsx
+// components/dashboard/ContentTable.tsx
 import {
   Table,
   TableBody,

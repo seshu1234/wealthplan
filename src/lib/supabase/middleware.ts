@@ -6,7 +6,7 @@ export async function updateSession(request: NextRequest) {
   const token = request.cookies.get('access_token')?.value
   const { pathname } = request.nextUrl
 
-  console.log(`[Middleware] Path: ${pathname}, HasToken: ${!!token}`)
+// console.log(`[Middleware] Path: ${pathname}, HasToken: ${!!token}`)
 
   // Determine user from our JWT access token (cookie) — no network call
   let isAuthenticated = false
@@ -14,7 +14,7 @@ export async function updateSession(request: NextRequest) {
     if (token) {
       await verifyToken(token)
       isAuthenticated = true
-      console.log(`[Middleware] Token valid for: ${pathname}`)
+// console.log(`[Middleware] Token valid for: ${pathname}`)
     }
   } catch (err) {
     console.log(`[Middleware] Token invalid or expired: ${err instanceof Error ? err.message : 'Unknown error'}`)
@@ -25,7 +25,7 @@ export async function updateSession(request: NextRequest) {
   const isDashboardRoute = pathname.startsWith('/dashboard')
   const isApiAuthRoute   = pathname.startsWith('/api/auth')
 
-  console.log(`[Middleware] Result: AuthRoute=${isAuthRoute}, DashRoute=${isDashboardRoute}, Authenticated=${isAuthenticated}`)
+// console.log(`[Middleware] Result: AuthRoute=${isAuthRoute}, DashRoute=${isDashboardRoute}, Authenticated=${isAuthenticated}`)
 
   // Let auth API routes always pass through
   if (isApiAuthRoute) return response

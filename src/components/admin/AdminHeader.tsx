@@ -1,4 +1,4 @@
-// components/admin/AdminHeader.tsx
+// components/dashboard/AdminHeader.tsx
 'use client'
 
 import { useState } from 'react'
@@ -263,7 +263,7 @@ export function AdminHeader({ user, role }: AdminHeaderProps) {
               </div>
               <DropdownMenuSeparator />
               <DropdownMenuItem asChild className="justify-center">
-                <Link href="/admin/notifications">View all notifications</Link>
+                <Link href="/dashboard/notifications">View all notifications</Link>
               </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
@@ -294,7 +294,7 @@ export function AdminHeader({ user, role }: AdminHeaderProps) {
               <DropdownMenuSeparator />
               <DropdownMenuGroup>
                 <DropdownMenuItem asChild>
-                  <Link href="/admin/profile">
+                  <Link href="/dashboard/profile">
                     <UserIcon className="mr-2 h-4 w-4" />
                     <span>Profile</span>
                     <DropdownMenuShortcut>⇧⌘P</DropdownMenuShortcut>
@@ -308,7 +308,7 @@ export function AdminHeader({ user, role }: AdminHeaderProps) {
                   </Link>
                 </DropdownMenuItem>
                 <DropdownMenuItem asChild>
-                  <Link href="/admin/help">
+                  <Link href="/dashboard/help">
                     <HelpCircle className="mr-2 h-4 w-4" />
                     <span>Help & Support</span>
                   </Link>

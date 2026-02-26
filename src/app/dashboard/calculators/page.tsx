@@ -1,4 +1,4 @@
-// app/admin/calculators/page.tsx
+// app/dashboard/calculators/page.tsx
 import { createServerClient } from '@supabase/auth-helpers-nextjs'
 import { cookies } from 'next/headers'
 import {
@@ -66,7 +66,7 @@ export default async function CalculatorsPage() {
           <p className="text-muted-foreground">Manage your financial calculators</p>
         </div>
         <Button asChild>
-          <Link href="/admin/calculators/new">
+          <Link href="/dashboard/calculators/new">
             <Plus className="h-4 w-4 mr-2" />
             New Calculator
           </Link>
@@ -124,7 +124,7 @@ export default async function CalculatorsPage() {
                     <DropdownMenuContent align="end">
                       <DropdownMenuLabel>Actions</DropdownMenuLabel>
                       <DropdownMenuItem asChild>
-                        <Link href={`/admin/calculators/${calc.id}/edit`}>Edit</Link>
+                        <Link href={`/dashboard/calculators/${calc.id}/edit`}>Edit</Link>
                       </DropdownMenuItem>
                       <DropdownMenuItem asChild>
                         <Link href={`/calculators/${calc.slug}`} target="_blank">View Live</Link>

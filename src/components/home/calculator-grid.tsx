@@ -1,8 +1,18 @@
 import Link from "next/link";
 import { Card, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
-import { CALCULATORS_REGISTRY } from "@/lib/calculators-registry";
+import { createClient } from "@/lib/supabase/server";
 
-export function CalculatorGrid() {
+export async function CalculatorGrid() {
+  const supabase = await createClient();
+  const { data: calculators } = await supabase
+    .from("calculators")
+    .select("id, title, slug, description, category")
+    .eq("status", "published")
+    .order("views_count", { ascending: false })
+    .limit(6);
+
+  if (!calculators?.length) return null;
+
   return (
     <section className="py-12 px-4 max-w-6xl mx-auto">
       <div className="mb-8">
@@ -10,12 +20,12 @@ export function CalculatorGrid() {
         <p className="text-muted-foreground">Tools to help you achieve financial independence.</p>
       </div>
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        {CALCULATORS_REGISTRY.map((calc) => (
+        {calculators.map((calc) => (
           <Link key={calc.id} href={`/calculators/${calc.slug}`} className="block group">
             <Card className="h-full transition-colors hover:border-[hsl(var(--accent-brand))]">
               <CardHeader>
                 <CardTitle className="group-hover:text-[hsl(var(--accent-brand))] transition-colors">
-                  {calc.name}
+                  {calc.title}
                 </CardTitle>
                 <CardDescription>{calc.description}</CardDescription>
               </CardHeader>

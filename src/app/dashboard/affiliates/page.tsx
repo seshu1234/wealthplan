@@ -1,4 +1,4 @@
-// app/admin/affiliates/page.tsx
+// app/dashboard/affiliates/page.tsx
 import { createServerClient } from '@supabase/auth-helpers-nextjs'
 import { cookies } from 'next/headers'
 import {

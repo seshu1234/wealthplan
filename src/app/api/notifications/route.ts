@@ -14,56 +14,41 @@ async function getAuthUserId(): Promise<string | null> {
   }
 }
 
-// GET /api/calculators — list calculators
+// GET /api/notifications — list notifications
 export async function GET(req: NextRequest) {
   const userId = await getAuthUserId()
   if (!userId) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
 
   const supabase = createAdminClient()
   const { searchParams } = new URL(req.url)
-  const status = searchParams.get('status')
+  const unreadOnly = searchParams.get('unread') === 'true'
 
   let query = supabase
-    .from('calculators')
+    .from('notifications')
     .select('*')
-    .order('updated_at', { ascending: false })
+    .order('created_at', { ascending: false })
 
-  if (status) query = query.eq('status', status)
+  if (unreadOnly) {
+    query = query.eq('read', false)
+  }
 
   const { data, error } = await query
   if (error) return NextResponse.json({ error: error.message }, { status: 500 })
   return NextResponse.json(data)
 }
 
-// POST /api/calculators — create a calculator
-export async function POST(req: NextRequest) {
+// PATCH /api/notifications — mark all as read
+export async function PATCH(req: NextRequest) {
   const userId = await getAuthUserId()
   if (!userId) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
 
-  const body = await req.json()
   const supabase = createAdminClient()
+  const { error } = await supabase
+    .from('notifications')
+    .update({ read: true })
+    .eq('user_id', userId) // Important: only for this user
+    .eq('read', false)
 
-  const { data, error } = await supabase
-    .from('calculators')
-    .insert({
-      title: body.title,
-      slug: body.slug,
-      description: body.description,
-      category: body.category,
-      status: body.status || 'draft',
-      seo_title: body.seo_title,
-      seo_description: body.seo_description,
-      config: body.config || {},
-      content: body.content || {},
-      author_id: userId,
-    })
-    .select()
-    .single()
-
-  if (error) {
-    const status = error.code === '23505' ? 409 : 500
-    return NextResponse.json({ error: error.message, code: error.code }, { status })
-  }
-
-  return NextResponse.json(data, { status: 201 })
+  if (error) return NextResponse.json({ error: error.message }, { status: 500 })
+  return NextResponse.json({ success: true })
 }
