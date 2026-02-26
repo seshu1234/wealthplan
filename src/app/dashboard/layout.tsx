@@ -1,6 +1,7 @@
 // app/dashboard/layout.tsx
-import { createServerClient } from '@supabase/auth-helpers-nextjs'
 import { cookies } from 'next/headers'
+import { redirect } from 'next/navigation'
+import { verifyToken } from '@/lib/jwt'
 import { AdminSidebar } from '@/components/admin/AdminSidebar'
 import { AdminHeader } from '@/components/admin/AdminHeader'
 
@@ -9,46 +10,29 @@ export default async function AdminLayout({
 }: {
   children: React.ReactNode
 }) {
+  // Verify identity via JWT cookie (no Supabase network call)
   const cookieStore = await cookies()
-  const supabase = createServerClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
-    {
-      cookies: {
-        getAll() {
-          return cookieStore.getAll()
-        },
-        setAll(cookiesToSet) {
-          try {
-            cookiesToSet.forEach(({ name, value, options }) =>
-              cookieStore.set(name, value, options)
-            )
-          } catch {
-            // Handled by middleware
-          }
-        },
-      },
-    }
-  )
-  const { data: { session } } = await supabase.auth.getSession()
+  const token = cookieStore.get('access_token')?.value
 
-  // We don't need to redirect here as middleware handles it.
-  // But we need the session and user data for the header.
-  if (!session) return null
+  if (!token) {
+    redirect('/auth/login')
+  }
 
-  const { data: adminUser } = await supabase
-    .from('admin_users')
-    .select('role')
-    .eq('id', session.user.id)
-    .single()
+  let userId: string
+  try {
+    const payload = await verifyToken(token)
+    userId = (payload as { sub: string }).sub
+  } catch {
+    redirect('/auth/login')
+  }
 
-  if (!adminUser) return null
+  const user = { id: userId, email: undefined as string | undefined }
 
   return (
     <div className="min-h-screen bg-background">
-      <AdminHeader user={session.user} role={adminUser.role} />
+      <AdminHeader user={user} role="admin" />
       <div className="flex">
-        <AdminSidebar role={adminUser.role} />
+        <AdminSidebar role="admin" />
         <main className="flex-1 p-8 ml-64">
           {children}
         </main>

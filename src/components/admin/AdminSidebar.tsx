@@ -9,124 +9,64 @@ import {
   Link2,
   BarChart3,
   Settings,
-  Users,
   TrendingUp,
-  DollarSign,
-  FileCheck
 } from 'lucide-react'
 import { cn } from '@/lib/utils'
 
 interface AdminSidebarProps {
-  role: 'admin' | 'editor' | 'viewer'
+  role: 'super_admin' | 'admin' | 'editor' | 'viewer'
 }
 
 const navigation = [
   {
     name: 'Dashboard',
-    href: '/admin',
+    href: '/dashboard',
     icon: BarChart3,
-    roles: ['admin', 'editor', 'viewer'],
+    roles: ['super_admin', 'admin', 'editor', 'viewer'],
   },
   {
     name: 'Calculators',
-    href: '/admin/calculators',
+    href: '/dashboard/calculators',
     icon: Calculator,
-    roles: ['admin', 'editor', 'viewer'],
+    roles: ['super_admin', 'admin', 'editor', 'viewer'],
     children: [
-      { name: 'All Calculators', href: '/admin/calculators' },
-      { name: 'Create New', href: '/admin/calculators/new', roles: ['admin', 'editor'] },
-      { name: 'Categories', href: '/admin/calculators/categories' },
-      { name: 'Versions', href: '/admin/calculators/versions', roles: ['admin'] },
+      { name: 'All Calculators', href: '/dashboard/calculators' },
+      { name: 'Create New', href: '/dashboard/calculators/new', roles: ['super_admin', 'admin', 'editor'] },
     ],
   },
   {
     name: 'Content',
-    href: '/admin/content',
+    href: '/dashboard/content',
     icon: FileText,
-    roles: ['admin', 'editor', 'viewer'],
+    roles: ['super_admin', 'admin', 'editor', 'viewer'],
     children: [
-      { name: 'All Content', href: '/admin/content' },
-      { name: 'Blog Posts', href: '/admin/content?type=blog' },
-      { name: 'Guides', href: '/admin/content?type=guide' },
-      { name: 'Strategies', href: '/admin/content?type=strategy' },
-      { name: 'Comparison Pages', href: '/admin/content?type=compare' },
-      { name: 'State Guides', href: '/admin/content?type=state' },
-      { name: 'Create New', href: '/admin/content/new', roles: ['admin', 'editor'] },
+      { name: 'All Content', href: '/dashboard/content' },
+      { name: 'Blog Posts', href: '/dashboard/content?type=blog' },
+      { name: 'Guides', href: '/dashboard/content?type=guide' },
+      { name: 'Create New', href: '/dashboard/content/new', roles: ['super_admin', 'admin', 'editor'] },
     ],
   },
   {
     name: 'Affiliates',
-    href: '/admin/affiliates',
+    href: '/dashboard/affiliates',
     icon: Link2,
-    roles: ['admin', 'editor'],
+    roles: ['super_admin', 'admin', 'editor'],
     children: [
-      { name: 'All Links', href: '/admin/affiliates' },
-      { name: 'Add New', href: '/admin/affiliates/new' },
-      { name: 'Categories', href: '/admin/affiliates/categories' },
-      { name: 'Performance', href: '/admin/affiliates/performance' },
+      { name: 'All Links', href: '/dashboard/affiliates' },
+      { name: 'Add New', href: '/dashboard/affiliates/new' },
     ],
   },
   {
     name: 'Analytics',
-    href: '/admin/analytics',
+    href: '/dashboard/analytics',
     icon: TrendingUp,
-    roles: ['admin', 'editor', 'viewer'],
-    children: [
-      { name: 'Overview', href: '/admin/analytics' },
-      { name: 'Calculator Usage', href: '/admin/analytics/calculators' },
-      { name: 'Content Performance', href: '/admin/analytics/content' },
-      { name: 'Affiliate Clicks', href: '/admin/analytics/affiliates' },
-      { name: 'User Behavior', href: '/admin/analytics/users' },
-    ],
-  },
-  {
-    name: 'SEO',
-    href: '/admin/seo',
-    icon: FileCheck,
-    roles: ['admin', 'editor'],
-    children: [
-      { name: 'Overview', href: '/admin/seo' },
-      { name: 'Keywords', href: '/admin/seo/keywords' },
-      { name: 'Sitemap', href: '/admin/seo/sitemap' },
-      { name: 'Schema Markup', href: '/admin/seo/schema' },
-      { name: 'Bulk Editor', href: '/admin/seo/bulk', roles: ['admin'] },
-    ],
-  },
-  {
-    name: 'Monetization',
-    href: '/admin/monetization',
-    icon: DollarSign,
-    roles: ['admin'],
-    children: [
-      { name: 'Revenue Overview', href: '/admin/monetization' },
-      { name: 'Ad Settings', href: '/admin/monetization/ads' },
-      { name: 'Affiliate Rules', href: '/admin/monetization/affiliates' },
-      { name: 'Digital Products', href: '/admin/monetization/products' },
-    ],
-  },
-  {
-    name: 'Users',
-    href: '/admin/users',
-    icon: Users,
-    roles: ['admin'],
-    children: [
-      { name: 'All Users', href: '/admin/users' },
-      { name: 'Roles & Permissions', href: '/admin/users/roles' },
-      { name: 'Activity Log', href: '/admin/users/activity' },
-    ],
+    roles: ['super_admin', 'admin', 'editor', 'viewer'],
   },
   {
     name: 'Settings',
-    href: '/admin/settings',
+    href: '/dashboard/settings',
     icon: Settings,
-    roles: ['admin'],
-    children: [
-      { name: 'General', href: '/admin/settings' },
-      { name: 'Tax Config', href: '/admin/settings/tax' },
-      { name: 'State Data', href: '/admin/settings/states' },
-      { name: 'API Keys', href: '/admin/settings/api' },
-      { name: 'Backup', href: '/admin/settings/backup' },
-    ],
+    roles: ['super_admin', 'admin'],
   },
 ]
 

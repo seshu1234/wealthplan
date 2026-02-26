@@ -1,6 +1,9 @@
 import { CalculatorShell } from "@/components/calculator/calculator-shell";
 import { FaqSection } from "@/components/calculator/faq-section";
 import { CompoundInterestCalc } from "@/components/calculator/compound-interest-calc";
+import { SchemaMarkup } from "@/components/calculator/schema-markup";
+import { RelatedCalculators } from "@/components/calculator/related-calculators";
+import { CalcArticle, InfoBox, DataTable } from "@/components/calculator/calc-article";
 
 export const metadata = {
   title: "Compound Interest Calculator (2025) — WealthPath",
@@ -10,72 +13,76 @@ export const metadata = {
 export default function CompoundInterestPage() {
   return (
     <CalculatorShell
+      calculatorId="compound-interest"
       title="Compound Interest Calculator"
       description="Calculate exactly how your savings grow when interest earns interest. Enter your starting amount, expected return rate, and time horizon to see a year-by-year breakdown of your wealth accumulation."
     >
       {/* Calculator Component Placeholder */}
       <CompoundInterestCalc />
 
-      <div className="prose prose-slate dark:prose-invert max-w-none prose-headings:tracking-tight prose-a:text-[hsl(var(--accent-brand))] mt-16 pt-8 border-t">
+      <CalcArticle>
         <h2>What Is Compound Interest?</h2>
         <p>
-          Compound interest is the process by which interest is added to your principal balance, and then that combined amount earns interest in the next period. Unlike simple interest — which only pays interest on your original deposit — compound interest accelerates growth over time because you are constantly earning returns on a larger and larger base.
+          Compound interest means your interest earns interest. Unlike simple interest — which only pays returns on your original deposit — compound interest accelerates growth because you earn returns on a constantly growing base.
         </p>
-        <p>
-          Albert Einstein is often (though likely apocryphally) credited with calling compound interest the eighth wonder of the world. Whether or not he said it, the math backs it up: a $10,000 investment earning 8% annually becomes $21,589 after 10 years, $46,610 after 20 years, and $100,627 after 30 years — all without adding a single additional dollar.
-        </p>
+        <InfoBox variant="tip">
+          A $10,000 investment at 8% annually becomes <strong>$21,589</strong> after 10 years, <strong>$46,610</strong> after 20 years, and <strong>$100,627</strong> after 30 years — without adding a single extra dollar.
+        </InfoBox>
 
-        <h2>How Compound Frequency Affects Your Balance</h2>
+        <h2>How Compounding Frequency Affects Your Balance</h2>
+        <p>Same $10,000 at 8% annual rate after 10 years — only the frequency changes:</p>
+        <DataTable
+          headers={['Frequency', 'Final Balance', 'Extra vs Annual']}
+          rows={[
+            ['Annually', '$21,589', '—'],
+            ['Quarterly', '$21,911', '+$322'],
+            ['Monthly', '$22,196', '+$607'],
+            ['Daily', '$22,253', '+$664'],
+          ]}
+        />
         <p>
-          Compounding can happen at different intervals: annually, quarterly, monthly, or even daily. The more frequently interest compounds, the faster your money grows — though the difference between monthly and daily compounding is smaller than most people expect.
-        </p>
-        <p>Here is how a $10,000 investment at 8% annual rate grows over 10 years depending on compounding frequency:</p>
-        <ul>
-          <li><strong>Annually:</strong> $21,589</li>
-          <li><strong>Quarterly:</strong> $21,911</li>
-          <li><strong>Monthly:</strong> $22,196</li>
-          <li><strong>Daily:</strong> $22,253</li>
-        </ul>
-        <p>
-          For most savings accounts and investments, monthly compounding is standard. What matters far more than compounding frequency is your contribution rate and how long you stay invested.
+          The difference between monthly and daily is negligible. What matters far more is your contribution rate and how long you stay invested.
         </p>
 
         <h2>The Rule of 72</h2>
-        <p>
-          A quick mental math shortcut: divide 72 by your expected annual return rate to estimate how many years it takes your money to double.
-        </p>
+        <p>Divide 72 by your annual return rate to estimate how many years your money takes to double.</p>
         <ul>
-          <li>At 6% return: 72 ÷ 6 = <strong>12 years to double</strong></li>
-          <li>At 8% return: 72 ÷ 8 = <strong>9 years to double</strong></li>
-          <li>At 10% return: 72 ÷ 10 = <strong>7.2 years to double</strong></li>
+          <li>At 6%: 72 ÷ 6 = <strong>12 years to double</strong></li>
+          <li>At 8%: 72 ÷ 8 = <strong>9 years to double</strong></li>
+          <li>At 10%: 72 ÷ 10 = <strong>7.2 years to double</strong></li>
         </ul>
-        <p>
-          This rule works because of the mathematics of exponential growth and is accurate within about 1–2% of the precise answer for rates between 4% and 15%.
-        </p>
+
+        <h2>What Return Rate Should I Use?</h2>
+        <DataTable
+          headers={['Account Type', 'Expected Return', 'Risk']}
+          rows={[
+            ['High-yield savings (HYSA)', '4.5–5.5%', '⚠️ Very Low'],
+            ['US Treasury bonds', '4–5%', '⚠️ Very Low'],
+            ['Balanced portfolio 60/40', '6–7%', '🟡 Moderate'],
+            ['S&P 500 historical avg', '~10% nominal / ~7% real', '🟠 High'],
+            ['Individual stocks', 'Highly variable', '🔴 Very High'],
+          ]}
+        />
 
         <h2>How to Use This Calculator</h2>
         <ol>
           <li>Enter your <strong>starting principal</strong> — the amount you are investing today</li>
-          <li>Set your <strong>annual interest rate</strong> — use 7–10% for long-term stock market estimates, 4–5% for high-yield savings</li>
+          <li>Set your <strong>annual interest rate</strong> — use 7–10% for stocks, 4–5% for HYSA</li>
           <li>Choose your <strong>time period</strong> in years</li>
-          <li>Select your <strong>compounding frequency</strong> — monthly is standard for most accounts</li>
-          <li>Optionally add <strong>monthly contributions</strong> to see how regular investing accelerates growth</li>
-          <li>Click Calculate to see your projected balance, total contributions, and total interest earned</li>
+          <li>Select <strong>compounding frequency</strong> — monthly is standard</li>
+          <li>Add <strong>monthly contributions</strong> to see how regular investing compounds</li>
         </ol>
+      </CalcArticle>
 
-        <h2>What Return Rate Should I Use?</h2>
-        <ul>
-          <li><strong>High-yield savings account:</strong> 4.5–5.5% (current rates as of 2025)</li>
-          <li><strong>US Treasury bonds:</strong> 4–5%</li>
-          <li><strong>Balanced portfolio (60% stocks / 40% bonds):</strong> 6–7%</li>
-          <li><strong>S&P 500 historical average:</strong> ~10% nominal, ~7% inflation-adjusted</li>
-          <li><strong>Individual stocks:</strong> Highly variable — do not assume past performance</li>
-        </ul>
-        <p>
-          For retirement planning, most financial planners recommend using 6–7% as a conservative estimate for a diversified portfolio.
-        </p>
-      </div>
-
+      <SchemaMarkup
+        type="FAQPage"
+        url="https://wealthpath.com/calculators/compound-interest"
+        data={[
+            { question: "What is the difference between compound interest and simple interest?", answer: "Simple interest is calculated only on your original principal. Compound interest is calculated on your principal plus all previously earned interest. Over long periods, the difference is enormous — compound interest creates exponential growth while simple interest creates linear growth." },
+            { question: "How often does compound interest typically compound?", answer: "Most savings accounts compound daily or monthly. Investment accounts compound continuously. For practical calculations, monthly compounding is the standard assumption." },
+            { question: "What is the best account to take advantage of compound interest?", answer: "For long-term growth: a Roth IRA or 401(k) invested in low-cost index funds. For short-term savings: a high-yield savings account or money market account." }
+          ]}
+      />
       <div className="mt-16 pt-8 border-t">
         <FaqSection 
           title="Frequently Asked Questions"
@@ -103,6 +110,8 @@ export default function CompoundInterestPage() {
           ]}
         />
       </div>
+
+      <RelatedCalculators calculatorId="compound-interest" />
     </CalculatorShell>
   );
 }

@@ -50,7 +50,7 @@ interface AdminHeaderProps {
       avatar_url?: string
     }
   }
-  role: 'admin' | 'editor' | 'viewer'
+  role: 'super_admin' | 'admin' | 'editor' | 'viewer'
 }
 
 export function AdminHeader({ user, role }: AdminHeaderProps) {
@@ -89,6 +89,7 @@ export function AdminHeader({ user, role }: AdminHeaderProps) {
 
   const handleSignOut = async () => {
     try {
+      await fetch('/api/auth/logout', { method: 'POST' })
       await supabase.auth.signOut()
       router.push('/auth/login')
       router.refresh()
@@ -131,7 +132,7 @@ export function AdminHeader({ user, role }: AdminHeaderProps) {
         </Button>
 
         {/* Logo */}
-        <Link href="/admin" className="flex items-center gap-2 font-semibold">
+        <Link href="/dashboard" className="flex items-center gap-2 font-semibold">
           <Sparkles className="h-5 w-5 text-[hsl(var(--accent-brand))]" />
           <span className="hidden sm:inline-block">WealthPath</span>
           <Badge variant="outline" className="ml-2 hidden sm:inline-block">
@@ -168,19 +169,19 @@ export function AdminHeader({ user, role }: AdminHeaderProps) {
               <DropdownMenuLabel>Quick Actions</DropdownMenuLabel>
               <DropdownMenuSeparator />
               <DropdownMenuItem asChild>
-                <Link href="/admin/calculators/new">
+                <Link href="/dashboard/calculators/new">
                   <Calculator className="mr-2 h-4 w-4" />
                   <span>New Calculator</span>
                 </Link>
               </DropdownMenuItem>
               <DropdownMenuItem asChild>
-                <Link href="/admin/content/new">
+                <Link href="/dashboard/content/new">
                   <FileText className="mr-2 h-4 w-4" />
                   <span>New Content</span>
                 </Link>
               </DropdownMenuItem>
               <DropdownMenuItem asChild>
-                <Link href="/admin/affiliates/new">
+                <Link href="/dashboard/affiliates/new">
                   <Link2 className="mr-2 h-4 w-4" />
                   <span>Add Affiliate</span>
                 </Link>
@@ -300,7 +301,7 @@ export function AdminHeader({ user, role }: AdminHeaderProps) {
                   </Link>
                 </DropdownMenuItem>
                 <DropdownMenuItem asChild>
-                  <Link href="/admin/settings">
+                  <Link href="/dashboard/settings">
                     <Settings className="mr-2 h-4 w-4" />
                     <span>Settings</span>
                     <DropdownMenuShortcut>⌘,</DropdownMenuShortcut>

@@ -1,6 +1,4 @@
-// app/admin/page.tsx
-import { createServerClient } from '@supabase/auth-helpers-nextjs'
-import { cookies } from 'next/headers'
+// app/dashboard/page.tsx
 import {
   Card,
   CardContent,
@@ -21,97 +19,66 @@ import {
 import { DashboardChart } from '@/components/admin/DashboardChart'
 import { RecentActivity } from '@/components/admin/RecentActivity'
 
-export default async function AdminDashboard() {
-  const cookieStore = await cookies()
-  const supabase = createServerClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
-    {
-      cookies: {
-        getAll() {
-          return cookieStore.getAll()
-        },
-      },
-    }
-  )
+const stats = [
+  {
+    title: 'Total Calculators',
+    value: 0,
+    icon: Calculator,
+    change: '+12%',
+    changeType: 'positive',
+  },
+  {
+    title: 'Content Pieces',
+    value: 0,
+    icon: FileText,
+    change: '+8%',
+    changeType: 'positive',
+  },
+  {
+    title: 'Active Affiliates',
+    value: 0,
+    icon: Link2,
+    change: '+5%',
+    changeType: 'positive',
+  },
+  {
+    title: 'Views Today',
+    value: 0,
+    icon: Eye,
+    change: '+23%',
+    changeType: 'positive',
+  },
+  {
+    title: 'Affiliate Clicks',
+    value: 0,
+    icon: MousePointerClick,
+    change: '+15%',
+    changeType: 'positive',
+  },
+  {
+    title: 'Est. Revenue (MTD)',
+    value: '$0',
+    icon: DollarSign,
+    change: '+18%',
+    changeType: 'positive',
+  },
+  {
+    title: 'Avg. Session',
+    value: '—',
+    icon: TrendingUp,
+    change: '+2%',
+    changeType: 'positive',
+  },
+  {
+    title: 'Active Users',
+    value: 0,
+    icon: Users,
+    change: '+7%',
+    changeType: 'positive',
+  },
+]
 
-  // eslint-disable-next-line react-hooks/purity
-  const yesterday = new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString()
-
-  // Get stats
-  const [
-    { count: calculatorsCount },
-    { count: contentCount },
-    { count: affiliateCount },
-    { count: viewsToday },
-    { count: clicksToday },
-  ] = await Promise.all([
-    supabase.from('calculators').select('*', { count: 'exact', head: true }).eq('status', 'published'),
-    supabase.from('content').select('*', { count: 'exact', head: true }).eq('status', 'published'),
-    supabase.from('affiliate_links').select('*', { count: 'exact', head: true }).eq('status', 'active'),
-    supabase.from('analytics_events').select('*', { count: 'exact', head: true }).gte('created_at', yesterday),
-    supabase.from('analytics_events').select('*', { count: 'exact', head: true }).eq('event_type', 'affiliate_click').gte('created_at', yesterday),
-  ])
-
-  const stats = [
-    {
-      title: 'Total Calculators',
-      value: calculatorsCount || 0,
-      icon: Calculator,
-      change: '+12%',
-      changeType: 'positive',
-    },
-    {
-      title: 'Content Pieces',
-      value: contentCount || 0,
-      icon: FileText,
-      change: '+8%',
-      changeType: 'positive',
-    },
-    {
-      title: 'Active Affiliates',
-      value: affiliateCount || 0,
-      icon: Link2,
-      change: '+5%',
-      changeType: 'positive',
-    },
-    {
-      title: 'Views Today',
-      value: viewsToday || 0,
-      icon: Eye,
-      change: '+23%',
-      changeType: 'positive',
-    },
-    {
-      title: 'Affiliate Clicks',
-      value: clicksToday || 0,
-      icon: MousePointerClick,
-      change: '+15%',
-      changeType: 'positive',
-    },
-    {
-      title: 'Est. Revenue (MTD)',
-      value: '$1,234',
-      icon: DollarSign,
-      change: '+18%',
-      changeType: 'positive',
-    },
-    {
-      title: 'Avg. Session',
-      value: '4m 32s',
-      icon: TrendingUp,
-      change: '+2%',
-      changeType: 'positive',
-    },
-    {
-      title: 'Active Users',
-      value: '342',
-      icon: Users,
-      change: '+7%',
-      changeType: 'positive',
-    },
-  ]
-
+export default function AdminDashboard() {
   return (
     <div className="space-y-8">
       <div>

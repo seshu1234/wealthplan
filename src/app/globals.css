@@ -149,17 +149,29 @@ figcaption {
 /* New Blog Layout Styles */
 .info-box {
   @apply bg-blue-500/10 dark:bg-blue-500/5 border-l-4 border-blue-500 rounded-r-xl p-6 my-8;
-  background: linear-gradient(135deg, rgba(59, 130, 246, 0.1), rgba(37, 99, 235, 0.05));
+  background: linear-gradient(
+    135deg,
+    rgba(59, 130, 246, 0.1),
+    rgba(37, 99, 235, 0.05)
+  );
 }
 
 .tip-box {
   @apply bg-green-500/10 dark:bg-green-500/5 border-l-4 border-green-500 rounded-r-xl p-6 my-8;
-  background: linear-gradient(135deg, rgba(34, 197, 94, 0.1), rgba(22, 163, 74, 0.05));
+  background: linear-gradient(
+    135deg,
+    rgba(34, 197, 94, 0.1),
+    rgba(22, 163, 74, 0.05)
+  );
 }
 
 .warning-box {
   @apply bg-orange-500/10 dark:bg-orange-500/5 border-l-4 border-orange-500 rounded-r-xl p-6 my-8;
-  background: linear-gradient(135deg, rgba(249, 115, 22, 0.1), rgba(234, 88, 12, 0.05));
+  background: linear-gradient(
+    135deg,
+    rgba(249, 115, 22, 0.1),
+    rgba(234, 88, 12, 0.05)
+  );
 }
 
 .stats-grid {
@@ -176,4 +188,66 @@ figcaption {
 
 .stat-label {
   @apply text-sm text-muted-foreground;
+}
+
+/* ============================================
+   PRINT / PDF STYLES
+   Triggered by PrintButton → window.print()
+   ============================================ */
+@media print {
+  /* Hide everything that shouldn't print */
+  nav,
+  header,
+  footer,
+  aside,
+  [data-adsense-zone],
+  [class*="print:hidden"],
+  .print\:hidden {
+    display: none !important;
+  }
+
+  /* Reset page */
+  body {
+    background: white !important;
+    color: black !important;
+    font-size: 12pt;
+  }
+
+  /* Make calculator fill the page cleanly */
+  .max-w-5xl,
+  .max-w-4xl {
+    max-width: 100% !important;
+    padding: 0 !important;
+  }
+
+  /* Force light mode for print */
+  * {
+    color: black !important;
+    background: white !important;
+    border-color: #e5e7eb !important;
+    box-shadow: none !important;
+  }
+
+  /* Keep result cards legible */
+  [class*="rounded"] {
+    border: 1px solid #e5e7eb !important;
+  }
+
+  /* Avoid page breaks inside cards */
+  .rounded-xl,
+  .rounded-lg {
+    break-inside: avoid;
+  }
+
+  /* Add print header with site name */
+  body::before {
+    content: "WealthPath · wealthpath.com";
+    display: block;
+    text-align: center;
+    font-size: 10pt;
+    color: #6b7280 !important;
+    margin-bottom: 16pt;
+    border-bottom: 1px solid #e5e7eb;
+    padding-bottom: 8pt;
+  }
 }
