@@ -23,7 +23,7 @@ export function FeaturesSection() {
   return (
     <section className="py-16 px-4 max-w-6xl mx-auto border-t border-border/40">
       <div className="text-center mb-12">
-        <h2 className="text-3xl font-bold tracking-tight">Why Choose WealthPath?</h2>
+        <h2 className="text-3xl font-bold tracking-tight">Why Choose Wealthplan?</h2>
         <p className="text-muted-foreground mt-4 max-w-2xl mx-auto">
           Built specifically for the American tax system and financial landscape, our tools aim to provide the most accurate projections available online.
         </p>

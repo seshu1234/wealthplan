@@ -40,12 +40,12 @@ export default async function EmbedPage({ params }: { params: Promise<{ slug: st
         <div className="flex items-center justify-between mb-4 pb-3 border-b">
           <p className="font-semibold text-sm">{calc.name}</p>
           <a
-            href={`https://wealthpath.com/calculators/${slug}`}
+            href={`https://Wealthplan.com/calculators/${slug}`}
             target="_blank"
             rel="noopener noreferrer"
             className="text-xs text-muted-foreground hover:text-foreground transition-colors"
           >
-            Powered by WealthPath ↗
+            Powered by Wealthplan ↗
           </a>
         </div>
 

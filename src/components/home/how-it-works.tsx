@@ -47,7 +47,7 @@ export function HowItWorks() {
           viewport={{ once: true }}
           transition={{ duration: 0.6 }}
         >
-          <h2 className="text-3xl font-bold tracking-tight mb-4">How WealthPath Works</h2>
+          <h2 className="text-3xl font-bold tracking-tight mb-4">How Wealthplan Works</h2>
           <p className="text-muted-foreground max-w-2xl mx-auto mb-16">
             Plan your financial future in three simple steps.
           </p>

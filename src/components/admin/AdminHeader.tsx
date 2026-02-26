@@ -124,7 +124,7 @@ export function AdminHeader({ user, role }: AdminHeaderProps) {
   }
 
   return (
-    <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
+    <header className="fixed top-0 z-[60] w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 text-foreground">
       <div className="flex h-16 items-center px-4 gap-4">
         {/* Mobile Menu Button (for smaller screens) */}
         <Button variant="ghost" size="icon" className="md:hidden">
@@ -134,7 +134,7 @@ export function AdminHeader({ user, role }: AdminHeaderProps) {
         {/* Logo */}
         <Link href="/dashboard" className="flex items-center gap-2 font-semibold">
           <Sparkles className="h-5 w-5 text-[hsl(var(--accent-brand))]" />
-          <span className="hidden sm:inline-block">WealthPath</span>
+          <span className="hidden sm:inline-block">Wealthplan</span>
           <Badge variant="outline" className="ml-2 hidden sm:inline-block">
             Admin
           </Badge>

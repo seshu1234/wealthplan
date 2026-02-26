@@ -1,7 +1,7 @@
 import { CalculatorGrid } from "@/components/home/calculator-grid";
 
 export const metadata = {
-  title: "All Financial Calculators | WealthPath",
+  title: "All Financial Calculators | Wealthplan",
   description: "Explore our collection of free, accurate financial calculators designed for the US tax system.",
 };
 

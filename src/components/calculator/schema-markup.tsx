@@ -4,7 +4,7 @@
  * Supports FAQPage, HowTo, and Article schemas.
  *
  * Usage (server component safe):
- *   <SchemaMarkup type="FAQPage" data={faqItems} url="https://wealthpath.com/calculators/compound-interest" />
+ *   <SchemaMarkup type="FAQPage" data={faqItems} url="https://Wealthplan.com/calculators/compound-interest" />
  */
 
 interface FAQItem {
@@ -55,8 +55,8 @@ function buildArticleSchema(data: Record<string, unknown>, url?: string) {
     ...data,
     publisher: {
       '@type': 'Organization',
-      name: 'WealthPath',
-      url: 'https://wealthpath.com',
+      name: 'Wealthplan',
+      url: 'https://Wealthplan.com',
     },
   }
 }

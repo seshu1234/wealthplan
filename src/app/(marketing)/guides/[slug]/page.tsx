@@ -15,7 +15,7 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
   const guide = GUIDES_REGISTRY.find((g) => g.slug === slug);
   if (!guide) return {};
   return {
-    title: `${guide.title} | WealthPath Guides`,
+    title: `${guide.title} | Wealthplan Guides`,
     description: guide.description,
   };
 }

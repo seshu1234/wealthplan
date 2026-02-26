@@ -1,4 +1,4 @@
-# WealthPath — Complete Rebuild Blueprint
+# Wealthplan — Complete Rebuild Blueprint
 
 **Fresh Start | US Finance Calculators | AdSense-First Strategy**
 
@@ -29,8 +29,8 @@ Register one of these (check Namecheap in this order):
 ### Repo Setup
 
 ```
-git init wealthpath
-cd wealthpath
+git init Wealthplan
+cd Wealthplan
 npx create-next-app@latest . --typescript --tailwind --app --src-dir
 npx shadcn@latest init
 ```
@@ -71,7 +71,7 @@ Add these to your `:root` and `.dark` blocks in `globals.css`:
 ```css
 :root {
   /* All existing shadcn zinc variables stay as-is */
-  /* Add WealthPath brand green */
+  /* Add Wealthplan brand green */
   --brand: 142 71% 42%;
   --brand-foreground: 0 0% 100%;
   --brand-muted: 142 40% 96%;

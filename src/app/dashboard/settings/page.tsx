@@ -6,7 +6,7 @@ import { Label } from '@/components/ui/label'
 import { Separator } from '@/components/ui/separator'
 import { Badge } from '@/components/ui/badge'
 
-export const metadata = { title: 'Settings — WealthPath Dashboard' }
+export const metadata = { title: 'Settings — Wealthplan Dashboard' }
 
 export default function SettingsPage() {
   return (
@@ -19,20 +19,20 @@ export default function SettingsPage() {
       <Card>
         <CardHeader>
           <CardTitle>Site Info</CardTitle>
-          <CardDescription>Basic information about your WealthPath site</CardDescription>
+          <CardDescription>Basic information about your Wealthplan site</CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
           <div className="space-y-2">
             <Label htmlFor="site-name">Site Name</Label>
-            <Input id="site-name" defaultValue="WealthPath" />
+            <Input id="site-name" defaultValue="Wealthplan" />
           </div>
           <div className="space-y-2">
             <Label htmlFor="site-url">Site URL</Label>
-            <Input id="site-url" defaultValue="https://wealthpath.com" />
+            <Input id="site-url" defaultValue="https://Wealthplan.com" />
           </div>
           <div className="space-y-2">
             <Label htmlFor="contact-email">Contact Email</Label>
-            <Input id="contact-email" type="email" defaultValue="hello@wealthpath.com" />
+            <Input id="contact-email" type="email" defaultValue="hello@Wealthplan.com" />
           </div>
         </CardContent>
       </Card>

@@ -47,9 +47,9 @@ export async function generateMetadata({
 }) {
   const { slug } = await params;
   const post = blogPosts[slug as keyof typeof blogPosts];
-  if (!post) return { title: "Post Not Found | WealthPath" };
+  if (!post) return { title: "Post Not Found | Wealthplan" };
   return {
-    title: `${post.title} | WealthPath`,
+    title: `${post.title} | Wealthplan`,
     description: post.excerpt,
     openGraph: {
       title: post.title,
@@ -190,7 +190,7 @@ export default async function BlogPostPage({
           <div className="aspect-video sm:aspect-[21/9] flex items-center justify-center p-6 sm:p-10">
             <div className="text-center space-y-2">
               <p className="text-xs font-bold tracking-widest uppercase text-muted-foreground">
-                WealthPath · {post.category}
+                Wealthplan · {post.category}
               </p>
               <h2 className="text-xl sm:text-2xl md:text-3xl font-bold text-foreground max-w-2xl leading-snug">
                 {post.title}

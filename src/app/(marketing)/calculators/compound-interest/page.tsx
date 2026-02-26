@@ -6,7 +6,7 @@ import { RelatedCalculators } from "@/components/calculator/related-calculators"
 import { CalcArticle, InfoBox, DataTable } from "@/components/calculator/calc-article";
 
 export const metadata = {
-  title: "Compound Interest Calculator (2025) — WealthPath",
+  title: "Compound Interest Calculator (2025) — Wealthplan",
   description: "Calculate how your money grows with compound interest. See year-by-year projections, total interest earned, and how contribution frequency affects your final balance.",
 };
 
@@ -76,7 +76,7 @@ export default function CompoundInterestPage() {
 
       <SchemaMarkup
         type="FAQPage"
-        url="https://wealthpath.com/calculators/compound-interest"
+        url="https://Wealthplan.com/calculators/compound-interest"
         data={[
             { question: "What is the difference between compound interest and simple interest?", answer: "Simple interest is calculated only on your original principal. Compound interest is calculated on your principal plus all previously earned interest. Over long periods, the difference is enormous — compound interest creates exponential growth while simple interest creates linear growth." },
             { question: "How often does compound interest typically compound?", answer: "Most savings accounts compound daily or monthly. Investment accounts compound continuously. For practical calculations, monthly compounding is the standard assumption." },

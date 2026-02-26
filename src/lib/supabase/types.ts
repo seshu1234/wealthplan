@@ -18,7 +18,7 @@ export type CallSentiment = 'positive' | 'neutral' | 'negative' | 'frustrated' |
 export type LeadStatus = 'hot' | 'warm' | 'cold' | 'converted' | 'disqualified'
 export type JobStatus = 'scheduled' | 'dispatched' | 'arrived' | 'in_progress' | 'completed' | 'cancelled'
 
-// WealthPath types
+// Wealthplan types
 export type AdminRole = 'super_admin' | 'admin' | 'editor' | 'viewer'
 export type ContentType = 'blog' | 'guide' | 'strategy' | 'compare' | 'state'
 export type ContentStatus = 'draft' | 'published' | 'archived'
@@ -945,7 +945,7 @@ export type Database = {
           }
         ]
       }
-      // ── WealthPath tables ──────────────────────────────────────────
+      // ── Wealthplan tables ──────────────────────────────────────────
       admin_users: {
         Row: {
           id: string

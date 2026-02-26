@@ -1,4 +1,4 @@
-# WealthPath — Complete Page Content
+# Wealthplan — Complete Page Content
 
 All content needed for AdSense approval. Copy directly into your pages.
 
@@ -11,7 +11,7 @@ All content needed for AdSense approval. Copy directly into your pages.
 ## 1. Compound Interest Calculator
 
 **URL:** `/calculators/compound-interest`
-**Title tag:** `Compound Interest Calculator (2025) — WealthPath`
+**Title tag:** `Compound Interest Calculator (2025) — Wealthplan`
 **Meta description:** `Calculate how your money grows with compound interest. See year-by-year projections, total interest earned, and how contribution frequency affects your final balance.`
 
 ### Intro (above or below calculator)
@@ -96,7 +96,7 @@ This calculator uses the standard compound interest formula: A = P(1 + r/n)^(nt)
 ## 2. Mortgage Calculator
 
 **URL:** `/calculators/mortgage-calculator`
-**Title tag:** `Mortgage Calculator (2025) — Monthly Payment & Amortization — WealthPath`
+**Title tag:** `Mortgage Calculator (2025) — Monthly Payment & Amortization — Wealthplan`
 **Meta description:** `Calculate your monthly mortgage payment including principal, interest, taxes, and insurance. See a full amortization schedule and compare 15-year vs 30-year loans.`
 
 ### Intro
@@ -190,21 +190,21 @@ The interest rate is the base cost of your loan. APR (Annual Percentage Rate) in
 ## About Page
 
 **URL:** `/about`
-**Title tag:** `About WealthPath — Free US Financial Calculators`
+**Title tag:** `About Wealthplan — Free US Financial Calculators`
 
 ### Content
 
 #### Our Mission
 
-WealthPath exists to give every American access to the same quality financial planning tools that were previously only available through expensive financial advisors or complicated spreadsheets.
+Wealthplan exists to give every American access to the same quality financial planning tools that were previously only available through expensive financial advisors or complicated spreadsheets.
 
-We build free, accurate, and transparent financial calculators designed specifically for the US tax system. Every calculator on WealthPath uses the current IRS tax brackets, 401(k) contribution limits, Social Security rules, and state tax rates — so the numbers you see reflect reality, not approximations.
+We build free, accurate, and transparent financial calculators designed specifically for the US tax system. Every calculator on Wealthplan uses the current IRS tax brackets, 401(k) contribution limits, Social Security rules, and state tax rates — so the numbers you see reflect reality, not approximations.
 
 #### What We Build
 
 Our tools cover the full spectrum of personal finance: retirement planning, mortgage calculations, debt payoff strategies, investment projections, tax estimation, and budgeting. Each calculator is built to give you accurate projections based on real US financial rules, along with clear explanations of the underlying math.
 
-We believe you should understand exactly how a calculation works — not just see a number. That is why every tool on WealthPath comes with a methodology section explaining the formulas used and what the results actually mean.
+We believe you should understand exactly how a calculation works — not just see a number. That is why every tool on Wealthplan comes with a methodology section explaining the formulas used and what the results actually mean.
 
 #### Our Principles
 
@@ -212,7 +212,7 @@ We believe you should understand exactly how a calculation works — not just se
 
 **Privacy by design.** All calculations happen in your browser. We do not store your financial data, we do not require an account, and we do not sell information to third parties. Your numbers are yours.
 
-**Education over advice.** WealthPath is an educational resource. We explain the math and the concepts so you can make more informed decisions — but we are not financial advisors, and nothing on this site should be taken as personalized financial advice. For major financial decisions, consult a licensed CFP or CPA.
+**Education over advice.** Wealthplan is an educational resource. We explain the math and the concepts so you can make more informed decisions — but we are not financial advisors, and nothing on this site should be taken as personalized financial advice. For major financial decisions, consult a licensed CFP or CPA.
 
 #### A Note on Our Calculators
 
@@ -225,7 +225,7 @@ _For questions or feedback, visit our [Contact page](/contact)._
 ## Privacy Policy
 
 **URL:** `/privacy-policy`
-**Title tag:** `Privacy Policy — WealthPath`
+**Title tag:** `Privacy Policy — Wealthplan`
 
 ### Content
 
@@ -233,7 +233,7 @@ _Last updated: January 2025_
 
 #### Information We Collect
 
-WealthPath is designed with privacy as a core principle. We do not require account creation, and we do not store any financial data you enter into our calculators. All calculations are performed locally in your browser.
+Wealthplan is designed with privacy as a core principle. We do not require account creation, and we do not store any financial data you enter into our calculators. All calculations are performed locally in your browser.
 
 We may collect limited non-personal information through analytics tools, including:
 
@@ -246,7 +246,7 @@ This information is used solely to understand how our tools are used so we can i
 
 #### Cookies
 
-WealthPath uses cookies for the following purposes:
+Wealthplan uses cookies for the following purposes:
 
 **Essential cookies:** Required for the site to function, including theme preference (light/dark mode).
 
@@ -264,11 +264,11 @@ We use the following third-party services:
 
 #### Your Financial Data
 
-Financial information you enter into our calculators (income, debt amounts, investment balances, etc.) is processed entirely within your browser. This data is never transmitted to our servers and is not accessible to WealthPath or any third party.
+Financial information you enter into our calculators (income, debt amounts, investment balances, etc.) is processed entirely within your browser. This data is never transmitted to our servers and is not accessible to Wealthplan or any third party.
 
 #### Children's Privacy
 
-WealthPath is intended for adults aged 18 and older. We do not knowingly collect information from children under 13.
+Wealthplan is intended for adults aged 18 and older. We do not knowingly collect information from children under 13.
 
 #### Changes to This Policy
 
@@ -283,19 +283,19 @@ For privacy-related questions, contact us through our [Contact page](/contact).
 ## Disclaimer
 
 **URL:** `/disclaimer`
-**Title tag:** `Disclaimer — WealthPath`
+**Title tag:** `Disclaimer — Wealthplan`
 
 ### Content
 
 #### Financial Disclaimer
 
-The calculators, tools, and content on WealthPath are provided for **educational and informational purposes only**. Nothing on this website constitutes financial, investment, tax, or legal advice.
+The calculators, tools, and content on Wealthplan are provided for **educational and informational purposes only**. Nothing on this website constitutes financial, investment, tax, or legal advice.
 
 The results produced by our calculators are estimates based on the information you provide and the assumptions built into each tool. Actual results will vary based on market conditions, changes in tax law, individual circumstances, and many other factors outside our control.
 
 #### Not a Substitute for Professional Advice
 
-WealthPath is not a registered investment advisor, financial planner, broker, or tax professional. We strongly recommend consulting with a qualified professional before making significant financial decisions, including but not limited to:
+Wealthplan is not a registered investment advisor, financial planner, broker, or tax professional. We strongly recommend consulting with a qualified professional before making significant financial decisions, including but not limited to:
 
 - Retirement planning and withdrawal strategies
 - Mortgage and home purchase decisions
@@ -313,18 +313,18 @@ Past investment performance referenced on this site is not a guarantee of future
 
 #### Affiliate Relationships
 
-WealthPath may earn commissions when you click affiliate links and open accounts with financial institutions we recommend. This does not affect the accuracy of our calculators or the objectivity of our content. We only recommend products and services we believe provide genuine value.
+Wealthplan may earn commissions when you click affiliate links and open accounts with financial institutions we recommend. This does not affect the accuracy of our calculators or the objectivity of our content. We only recommend products and services we believe provide genuine value.
 
 #### Limitation of Liability
 
-WealthPath and its operators shall not be liable for any financial losses, damages, or decisions made based on information from this website.
+Wealthplan and its operators shall not be liable for any financial losses, damages, or decisions made based on information from this website.
 
 ---
 
 ## Contact Page
 
 **URL:** `/contact`
-**Title tag:** `Contact WealthPath`
+**Title tag:** `Contact Wealthplan`
 
 ### Content
 

@@ -7,7 +7,7 @@ import { LiveRatesBanner } from "@/components/calculator/live-rates-banner";
 import { CalcArticle, InfoBox, DataTable } from "@/components/calculator/calc-article";
 
 export const metadata = {
-  title: "Mortgage Calculator (2025) — Monthly Payment & Amortization — WealthPath",
+  title: "Mortgage Calculator (2025) — Monthly Payment & Amortization — Wealthplan",
   description: "Calculate your monthly mortgage payment including principal, interest, taxes, and insurance. See a full amortization schedule and compare 15-year vs 30-year loans.",
 };
 
@@ -83,7 +83,7 @@ export default function MortgageCalculatorPage() {
 
       <SchemaMarkup
         type="FAQPage"
-        url="https://wealthpath.com/calculators/mortgage-calculator"
+        url="https://Wealthplan.com/calculators/mortgage-calculator"
         data={[
             { question: "How much house can I afford?", answer: "A common guideline is the 28/36 rule: spend no more than 28% of your gross monthly income on housing costs (PITI), and no more than 36% on total debt payments." },
             { question: "What credit score do I need for a mortgage?", answer: "For a conventional loan, most lenders require a minimum 620 credit score, though you will get significantly better rates above 740." },

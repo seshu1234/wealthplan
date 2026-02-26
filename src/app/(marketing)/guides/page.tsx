@@ -3,7 +3,7 @@ import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@/com
 import { GUIDES_REGISTRY } from "@/lib/guides-registry";
 
 export const metadata = {
-  title: "Financial Guides & Education | WealthPath",
+  title: "Financial Guides & Education | Wealthplan",
   description: "Learn about US taxes, retirement planning, investing strategies, and debt payoff methods.",
 };
 

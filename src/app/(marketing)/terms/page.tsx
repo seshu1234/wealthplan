@@ -26,8 +26,8 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 
 export const metadata = {
-  title: "Terms of Service | WealthPath",
-  description: "Terms and conditions for using WealthPath's financial planning tools and calculators.",
+  title: "Terms of Service | Wealthplan",
+  description: "Terms and conditions for using Wealthplan's financial planning tools and calculators.",
 };
 
 export default function TermsPage() {
@@ -38,7 +38,7 @@ export default function TermsPage() {
       id: "license",
       title: "1. Limited License",
       icon: FileText,
-      content: "WealthPath grants you a personal, non-exclusive, non-transferable, limited license to use our financial planning tools, calculators, and resources for personal, non-commercial use only. You may not reproduce, redistribute, modify, or use our tools for commercial purposes without prior written consent. Any unauthorized use automatically terminates this license."
+      content: "Wealthplan grants you a personal, non-exclusive, non-transferable, limited license to use our financial planning tools, calculators, and resources for personal, non-commercial use only. You may not reproduce, redistribute, modify, or use our tools for commercial purposes without prior written consent. Any unauthorized use automatically terminates this license."
     },
     {
       id: "responsibilities",
@@ -50,7 +50,7 @@ export default function TermsPage() {
       id: "intellectual-property",
       title: "3. Intellectual Property Rights",
       icon: Scale,
-      content: "All content, including but not limited to calculator algorithms, financial models, design elements, graphics, proprietary code, and written resources, is the exclusive property of WealthPath and is protected by international copyright, trademark, and intellectual property laws. You may not copy, modify, or create derivative works without express written permission."
+      content: "All content, including but not limited to calculator algorithms, financial models, design elements, graphics, proprietary code, and written resources, is the exclusive property of Wealthplan and is protected by international copyright, trademark, and intellectual property laws. You may not copy, modify, or create derivative works without express written permission."
     },
     {
       id: "disclaimer",

@@ -33,7 +33,7 @@ export function Testimonials() {
           className="text-center mb-16"
         >
           <h2 className="text-3xl font-bold tracking-tight">Trusted by Planners</h2>
-          <p className="text-muted-foreground mt-4">See how others are using WealthPath to plan their financial independence.</p>
+          <p className="text-muted-foreground mt-4">See how others are using Wealthplan to plan their financial independence.</p>
         </motion.div>
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8">

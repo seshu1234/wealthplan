@@ -1,5 +1,5 @@
 -- ============================================================
--- WealthPath — Complete Site Schema
+-- Wealthplan — Complete Site Schema
 -- Single authoritative migration. Run after a full DB reset.
 -- ============================================================
 
@@ -353,9 +353,9 @@ create trigger trg_site_settings_updated_at
 
 -- Default values
 insert into site_settings (key, value, description) values
-  ('site_name',         '"WealthPath"',             'Public site name'),
-  ('site_url',          '"https://wealthpath.com"',  'Canonical domain'),
-  ('contact_email',     '"hello@wealthpath.com"',    'Public contact email'),
+  ('site_name',         '"Wealthplan"',             'Public site name'),
+  ('site_url',          '"https://Wealthplan.com"',  'Canonical domain'),
+  ('contact_email',     '"hello@Wealthplan.com"',    'Public contact email'),
   ('adsense_publisher', 'null',                      'Google AdSense publisher ID'),
   ('analytics_enabled', 'true',                      'Enable anonymous event tracking'),
   ('ai_enabled',        'true',                      'Enable Gemini AI features'),

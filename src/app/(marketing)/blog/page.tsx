@@ -29,7 +29,7 @@ import { Input } from "@/components/ui/input";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 
 export const metadata = {
-  title: "Blog | WealthPath - Financial Education & Insights",
+  title: "Blog | Wealthplan - Financial Education & Insights",
   description:
     "Expert articles on retirement planning, tax strategies, investment basics, and personal finance management.",
 };

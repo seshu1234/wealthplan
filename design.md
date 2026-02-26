@@ -1,4 +1,4 @@
-# WealthPath — Design System & Agent Instructions
+# Wealthplan — Design System & Agent Instructions
 
 > **READ THIS BEFORE WRITING ANY CODE.**
 > Every component, page, and calculator must follow these rules exactly.
@@ -35,7 +35,7 @@ We use shadcn's CSS variable system. The palette is defined once in `globals.css
 | `primary-foreground`    | #fafafa | #18181b | Text on primary buttons          |
 | `ring`                  | #18181b | #d4d4d8 | Focus rings                      |
 
-### Brand Accent (WealthPath Green)
+### Brand Accent (Wealthplan Green)
 
 ```css
 /* Add to globals.css :root and .dark */

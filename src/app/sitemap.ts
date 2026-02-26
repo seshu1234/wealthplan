@@ -2,7 +2,7 @@ import { MetadataRoute } from "next";
 import { CALCULATORS_REGISTRY } from "@/lib/calculators-registry";
 
 export default function sitemap(): MetadataRoute.Sitemap {
-  const baseUrl = "https://wealthpath.example.com";
+  const baseUrl = "https://Wealthplan.example.com";
 
   const staticRoutes = [
     "",

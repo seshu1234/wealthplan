@@ -241,7 +241,7 @@ figcaption {
 
   /* Add print header with site name */
   body::before {
-    content: "WealthPath · wealthpath.com";
+    content: "Wealthplan · Wealthplan.com";
     display: block;
     text-align: center;
     font-size: 10pt;
