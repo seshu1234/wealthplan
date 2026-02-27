@@ -28,6 +28,8 @@ import {
 } from "@/components/ui/accordion"
 import { Button } from '@/components/ui/button'
 import { Brain, Loader2, AlertTriangle } from 'lucide-react'
+import { HistoricalContext } from './historical-context'
+import { WhatIfSidekick } from '../ai/WhatIfSidekick'
 
 interface DynamicCalculatorProps {
   calculatorId: string
@@ -98,8 +100,15 @@ export function DynamicCalculator({ calculatorId, config }: DynamicCalculatorPro
 
   const [aiInsight, setAiInsight] = useState<string>('')
   const [isAnalyzing, setIsAnalyzing] = useState(false)
+  const [showInflation, setShowInflation] = useState(false)
+  const [inflationRate, setInflationRate] = useState(3)
 
-  // Sync state if config changes (avoiding useEffect for synchronous updates)
+  // Identify time horizon (years) from inputs or defaults
+  const years = useMemo(() => {
+    return Number(values.years || values.time || values.duration || values.term || 0)
+  }, [values])
+
+  // Sync state if config changes
   const [prevConfig, setPrevConfig] = useState(config)
   if (config !== prevConfig) {
     setPrevConfig(config)
@@ -224,8 +233,13 @@ export function DynamicCalculator({ calculatorId, config }: DynamicCalculatorPro
 
   const formatValue = (val: number | string | undefined, format: 'currency' | 'percent' | 'number', textOnly = false) => {
     if (val === undefined || val === null) return '—'
-    const num = Number(val)
+    let num = Number(val)
     if (isNaN(num)) return '—'
+
+    // Apply Inflation Adjustment if it's currency and toggle is on
+    if (showInflation && format === 'currency' && years > 0) {
+      num = num / Math.pow(1 + inflationRate / 100, years)
+    }
     
     if (textOnly) {
       if (format === 'currency') return `$${num.toLocaleString('en-US', { maximumFractionDigits: 0 })}`
@@ -333,6 +347,26 @@ export function DynamicCalculator({ calculatorId, config }: DynamicCalculatorPro
                 <Sparkles className="h-4 w-4 text-primary" />
                 <h2 className="text-xs font-bold uppercase tracking-widest text-muted-foreground">Results</h2>
               </div>
+
+              {/* Inflation Toggle (Brutal Honesty Mode) */}
+              {years > 0 && (
+                <div className="flex items-center gap-2 bg-primary/5 px-3 py-1.5 rounded-full border border-primary/10 transition-all hover:bg-primary/10">
+                  <div className="relative inline-flex h-4 w-7 shrink-0 cursor-pointer items-center rounded-full transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background disabled:cursor-not-allowed disabled:opacity-50">
+                    <input 
+                      type="checkbox" 
+                      className="peer sr-only" 
+                      checked={showInflation} 
+                      onChange={() => setShowInflation(!showInflation)} 
+                    />
+                    <div className={`pointer-events-none block h-3 w-3 rounded-full bg-background shadow-lg ring-0 transition-transform ${showInflation ? "translate-x-3.5 bg-primary" : "translate-x-0.5"}`} />
+                    <div className={`absolute inset-0 rounded-full transition-colors ${showInflation ? "bg-primary/40" : "bg-muted-foreground/30"}`} />
+                  </div>
+                  <span className={`text-[10px] font-black uppercase tracking-tighter ${showInflation ? "text-primary" : "text-muted-foreground"}`}>
+                    Brutal Honesty
+                  </span>
+                </div>
+              )}
+
               <motion.span 
                 key={scenarioNarrative}
                 initial={{ opacity: 0, x: 20 }}
@@ -342,6 +376,40 @@ export function DynamicCalculator({ calculatorId, config }: DynamicCalculatorPro
                 {scenarioNarrative}
               </motion.span>
             </div>
+
+            {/* Brutal Honesty Controls & Insights */}
+            {showInflation && years > 0 && (
+              <motion.div 
+                initial={{ opacity: 0, height: 0 }}
+                animate={{ opacity: 1, height: 'auto' }}
+                className="space-y-4 pt-2"
+              >
+                <div className="flex flex-col sm:flex-row sm:items-center gap-4 p-4 rounded-xl bg-primary/5 border border-primary/10">
+                  <div className="flex-1 space-y-2">
+                    <div className="flex items-center justify-between text-[10px] font-bold uppercase tracking-widest text-primary">
+                      <span>Assumed Inflation Rate</span>
+                      <span>{inflationRate}%</span>
+                    </div>
+                    <Slider
+                      value={[inflationRate]}
+                      min={0}
+                      max={8}
+                      step={0.1}
+                      onValueChange={([v]) => setInflationRate(v)}
+                    />
+                  </div>
+                  <div className="text-[10px] text-muted-foreground leading-relaxed sm:max-w-[200px]">
+                    Historically, inflation averages **3.1%**. Using **0%** (Nominal) masks the reality of future purchasing power.
+                  </div>
+                </div>
+                
+                <HistoricalContext 
+                  futureValue={Number(results.outputs.finalBalance || 0)} 
+                  years={years}
+                  inflationRate={inflationRate}
+                />
+              </motion.div>
+            )}
 
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               {config.outputs?.map((output) => (
@@ -421,6 +489,13 @@ export function DynamicCalculator({ calculatorId, config }: DynamicCalculatorPro
                 </div>
               )}
             </div>
+
+            {/* What-If Sidekick */}
+            <WhatIfSidekick 
+              calculatorId={calculatorId}
+              inputs={values}
+              results={results.outputs}
+            />
 
             {/* Insight Title/Body */}
             {(content?.explanation?.title || content?.explanation?.body) && (

@@ -1,5 +1,6 @@
 import { NextRequest } from 'next/server'
 import OpenAI from 'openai'
+import { getCachedResponse, saveResponseToCache, generateInterpretHash } from '@/lib/ai/cache-service'
 
 const getAIClient = () => {
   if (process.env.DEEPSEEK_API_KEY) {
@@ -9,6 +10,7 @@ const getAIClient = () => {
         baseURL: 'https://api.deepseek.com',
       }),
       model: 'deepseek-chat',
+      provider: 'deepseek'
     }
   }
   if (process.env.OPENAI_API_KEY) {
@@ -17,6 +19,7 @@ const getAIClient = () => {
         apiKey: process.env.OPENAI_API_KEY,
       }),
       model: 'gpt-4o-mini',
+      provider: 'openai'
     }
   }
   return null
@@ -90,13 +93,22 @@ export async function POST(request: NextRequest) {
   try {
     const { calculatorId, inputs, results } = await request.json()
 
+    // Cache Layer (Persistent Result Reuse)
+    const inputHash = generateInterpretHash(calculatorId, inputs, results)
+    const cachedResponse = await getCachedResponse(inputHash)
+    if (cachedResponse) {
+      return new Response(cachedResponse, { 
+        headers: { 'Content-Type': 'text/plain', 'X-AI-Strategy': 'cache-hit' } 
+      })
+    }
+
     const ai = getAIClient()
 
     if (!ai) {
       // Graceful fallback if AI key not configured
       return new Response(
         "Great calculation! Based on your inputs, you're making solid financial decisions. Consider reviewing your numbers periodically as your situation changes — even small adjustments now can make a significant difference over time.",
-        { headers: { 'Content-Type': 'text/plain' } }
+        { headers: { 'Content-Type': 'text/plain', 'X-AI-Strategy': 'fallback' } }
       )
     }
 
@@ -112,12 +124,20 @@ export async function POST(request: NextRequest) {
     })
 
     const encoder = new TextEncoder()
+    let fullContent = ''
+    
     const readableStream = new ReadableStream({
       async start(controller) {
         try {
           for await (const chunk of stream) {
             const content = chunk.choices[0]?.delta?.content || ""
-            if (content) controller.enqueue(encoder.encode(content))
+            if (content) {
+              fullContent += content
+              controller.enqueue(encoder.encode(content))
+            }
+          }
+          if (fullContent.length > 30) {
+            await saveResponseToCache(inputHash, fullContent, ai.provider, ai.model)
           }
         } catch (streamErr) {
           console.error('Streaming error:', streamErr)
@@ -132,6 +152,7 @@ export async function POST(request: NextRequest) {
         'Content-Type': 'text/plain; charset=utf-8',
         'Transfer-Encoding': 'chunked',
         'Cache-Control': 'no-cache',
+        'X-AI-Strategy': 'ai-generation'
       },
     })
 

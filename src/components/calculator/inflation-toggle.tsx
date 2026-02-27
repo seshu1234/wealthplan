@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useCallback } from 'react'
+import { useState } from 'react'
 import { SliderField } from '@/components/calculator/slider-field'
 import { HistoricalContext } from '@/components/calculator/historical-context'
 import { Switch } from '@/components/ui/switch'
@@ -31,8 +31,8 @@ export function InflationToggle({ nominalValue, years, children }: InflationTogg
           checked={showReal}
           onCheckedChange={setShowReal}
         />
-        <Label htmlFor="inflation-toggle" className="cursor-pointer text-sm font-medium">
-          {showReal ? "Showing today's dollars (inflation-adjusted)" : 'Showing future dollars (nominal)'}
+        <Label htmlFor="inflation-toggle" className="cursor-pointer text-sm font-black uppercase tracking-tighter">
+          {showReal ? "Reality Check: Today's Purchasing Power" : "NOMINAL: Future Dollars"}
         </Label>
       </div>
 

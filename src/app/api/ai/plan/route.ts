@@ -1,5 +1,6 @@
 import { NextRequest } from 'next/server'
 import OpenAI from 'openai'
+import { getHeuristicAudit, getCachedResponse, saveResponseToCache, generateProfileHash } from '@/lib/ai/cache-service'
 
 const getAIClient = () => {
   if (process.env.DEEPSEEK_API_KEY) {
@@ -9,6 +10,7 @@ const getAIClient = () => {
         baseURL: 'https://api.deepseek.com',
       }),
       model: 'deepseek-chat',
+      provider: 'deepseek'
     }
   }
   if (process.env.OPENAI_API_KEY) {
@@ -17,6 +19,7 @@ const getAIClient = () => {
         apiKey: process.env.OPENAI_API_KEY,
       }),
       model: 'gpt-4o-mini',
+      provider: 'openai'
     }
   }
   return null
@@ -62,10 +65,27 @@ export async function POST(request: NextRequest) {
       return new Response('Missing answers', { status: 400 })
     }
 
+    // 1. Heuristic Layer (Instant Logic Audit)
+    const heuristicResponse = getHeuristicAudit(answers)
+    if (heuristicResponse) {
+      return new Response(heuristicResponse, { 
+        headers: { 'Content-Type': 'text/plain', 'X-AI-Strategy': 'heuristic' } 
+      })
+    }
+
+    // 2. Cache Layer (Persistent Result Reuse)
+    const inputHash = generateProfileHash(answers)
+    const cachedPlan = await getCachedResponse(inputHash)
+    if (cachedPlan) {
+      return new Response(cachedPlan, { 
+        headers: { 'Content-Type': 'text/plain', 'X-AI-Strategy': 'cache-hit' } 
+      })
+    }
+
     const ai = getAIClient()
 
     if (!ai) {
-      return new Response(FALLBACK_PLAN, { headers: { 'Content-Type': 'text/plain' } })
+      return new Response(FALLBACK_PLAN, { headers: { 'Content-Type': 'text/plain', 'X-AI-Strategy': 'fallback' } })
     }
 
     const stream = await ai.client.chat.completions.create({
@@ -75,12 +95,21 @@ export async function POST(request: NextRequest) {
     })
 
     const encoder = new TextEncoder()
+    let fullContent = ''
+    
     const readableStream = new ReadableStream({
       async start(controller) {
         try {
           for await (const chunk of stream) {
             const content = chunk.choices[0]?.delta?.content || ""
-            if (content) controller.enqueue(encoder.encode(content))
+            if (content) {
+              fullContent += content
+              controller.enqueue(encoder.encode(content))
+            }
+          }
+          // Only save to cache if it's a full successful generation
+          if (fullContent.length > 100) {
+            await saveResponseToCache(inputHash, fullContent, ai.provider, ai.model)
           }
         } catch (streamErr) {
           console.error('Streaming error:', streamErr)
@@ -95,12 +124,12 @@ export async function POST(request: NextRequest) {
         'Content-Type': 'text/plain; charset=utf-8',
         'Transfer-Encoding': 'chunked',
         'Cache-Control': 'no-cache',
+        'X-AI-Strategy': 'ai-generation'
       },
     })
   } catch (err: unknown) {
     console.error('Plan API error:', err)
     
-    // Handle status codes or specific messages from OpenAI/DeepSeek
     const errorBody = err as { status?: number; message?: string }
     if (errorBody.status === 429 || errorBody.message?.includes('429')) {
       return new Response(
