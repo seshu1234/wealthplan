@@ -87,7 +87,7 @@ Your goal is to provide a "Reality Check" insight (3-4 sentences) that:
 3. Quantifies the impact of a small change (e.g., "Increasing X by 5% would accelerate your goal by Y months").
 4. Ends with a high-authority, encouraging summary.
 
-Be direct, analytical, and professional. No bullet points. No headers. No disclaimers.`
+Be direct, analytical, and professional. Use strictly US nomenclature ($ and USD). NEVER use Indian terminology (₹, lakhs, crores). No bullet points. No headers. No disclaimers.`
 
 export async function POST(request: NextRequest) {
   try {

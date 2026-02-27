@@ -1226,9 +1226,14 @@ export function DynamicCalculator({
                         fontSize={11}
                         tickLine={false}
                         axisLine={false}
-                        tickFormatter={(val) =>
-                          `$${(Number(val) / 1000).toFixed(0)}k`
-                        }
+                        tickFormatter={(val) => {
+                          const num = Number(val);
+                          const currency = config.currency || "$";
+                          if (num >= 1e9) return `${currency}${(num / 1e9).toFixed(1)}B`;
+                          if (num >= 1e6) return `${currency}${(num / 1e6).toFixed(1)}M`;
+                          if (num >= 1e3) return `${currency}${(num / 1e3).toFixed(0)}k`;
+                          return `${currency}${num}`;
+                        }}
                       />
                       <Tooltip content={<ChartTooltip />} />
                       {chart.series

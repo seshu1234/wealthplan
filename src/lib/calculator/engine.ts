@@ -152,13 +152,18 @@ export function executeCalculation(
 
       try {
         const validVars = Object.keys(currentContext).filter(v => /^[a-zA-Z_$][0-9a-zA-Z_$]*$/.test(v));
-        // Create a function that takes 'ctx' and returns the formula result.
-        // We destructure only valid variables into the local scope.
+        // DEBUG LOG TO TRACE $0 RESULTS
+        if (output.id === 'total_value') {
+          console.log(`[Engine Debug] Context for total_value:`, JSON.stringify(currentContext));
+        }
+        
         const fnBody = `
           try {
             const { ${validVars.join(', ')} } = ctx;
-            return Number(${formula});
+            const res = Number(${formula});
+            return isNaN(res) ? 0 : res;
           } catch (e) {
+            console.error('Inner Formula Error:', e);
             return 0;
           }
         `;
