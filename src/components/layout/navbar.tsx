@@ -109,6 +109,9 @@ const calculatorCategories = [
 ];
 
 const mainLinks = [
+  { title: "Strategy", href: "/strategy", icon: Sparkles },
+  { title: "Roadmaps", href: "/roadmaps", icon: Map },
+  { title: "State Taxes", href: "/taxes/state-matrix", icon: Landmark },
   { title: "Guides", href: "/guides", icon: BookOpen },
   { title: "Blog", href: "/blog", icon: BookOpen },
   { title: "About", href: "/about", icon: Info },
@@ -188,7 +191,7 @@ export function Navbar() {
               </NavigationMenuItem>
 
               {/* Main links */}
-              {mainLinks.slice(0, 2).map((link) => (
+              {mainLinks.slice(0, 5).map((link) => (
                 <NavigationMenuItem key={link.title}>
                   <Link href={link.href} legacyBehavior passHref>
                     <NavigationMenuLink

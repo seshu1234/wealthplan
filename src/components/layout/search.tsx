@@ -52,6 +52,9 @@ const searchItems = [
     group: "Resources",
     items: [
       { id: "guides", title: "Financial Guides", href: "/guides", icon: <FileText className="mr-2 h-4 w-4" /> },
+      { id: "strategy", title: "WealthPath Strategy", href: "/strategy", icon: <Sparkles className="mr-2 h-4 w-4" /> },
+      { id: "roadmaps", title: "Financial Roadmaps", href: "/roadmaps", icon: <FileText className="mr-2 h-4 w-4" /> },
+      { id: "taxes", title: "State Tax Matrix", href: "/taxes/state-matrix", icon: <Landmark className="mr-2 h-4 w-4" /> },
       { id: "blog", title: "Market Insights", href: "/blog", icon: <FileText className="mr-2 h-4 w-4" /> },
       { id: "plan", title: "AI Financial Plan", href: "/plan", icon: <Sparkles className="mr-2 h-4 w-4" /> },
     ]
