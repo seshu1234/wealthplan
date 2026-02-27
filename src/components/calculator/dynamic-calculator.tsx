@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useMemo } from 'react'
+import { useState, useMemo, useEffect } from 'react'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
@@ -27,7 +27,6 @@ import {
   AccordionTrigger,
 } from "@/components/ui/accordion"
 import { Switch } from '@/components/ui/switch'
-import { Button } from '@/components/ui/button'
 import { Brain, Loader2, AlertTriangle } from 'lucide-react'
 import { HistoricalContext } from './historical-context'
 import { WhatIfSidekick } from '../ai/WhatIfSidekick'
@@ -179,6 +178,18 @@ export function DynamicCalculator({ calculatorId, config }: DynamicCalculatorPro
       rawResults: raw 
     }
   }, [config, values, showInflation, inflationRate, years])
+
+  // AI-First: Auto-narrate results when they change (with debounce)
+  useEffect(() => {
+    if (!results.outputs || Object.keys(results.outputs).length === 0) return
+    
+    const timer = setTimeout(() => {
+      handleAiRealityCheck()
+    }, 1500) // 1.5s delay to ensure user finished sliding/typing
+
+    return () => clearTimeout(timer)
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [JSON.stringify(results.outputs)])
 
   // Identify the "Primary" future value for insights
   const primaryFutureValue = useMemo(() => {
@@ -537,43 +548,32 @@ export function DynamicCalculator({ calculatorId, config }: DynamicCalculatorPro
               </div>
             )}
 
-            {/* AI Reality Check Trigger */}
+            {/* AI Reality Check (Narrative Impact) */}
             <div className="pt-4 border-t border-dashed">
-              {!aiInsight && !isAnalyzing ? (
-                <Button 
-                  onClick={handleAiRealityCheck} 
-                  variant="outline" 
-                  className="w-full gap-2 border-primary/20 hover:bg-primary/5 text-primary font-bold transition-all group"
-                >
-                  <Brain className="size-4 group-hover:scale-110 transition-transform" />
-                  Run AI Reality Check
-                </Button>
-              ) : (
-                <div className="rounded-2xl bg-primary/5 border border-primary/10 p-6 space-y-4 relative overflow-hidden">
-                  <div className="absolute top-0 right-0 p-3 opacity-10">
-                    <Brain size={48} className="text-primary" />
-                  </div>
-                  <div className="flex items-center gap-2 text-xs font-bold text-primary uppercase tracking-widest">
-                    {isAnalyzing ? (
-                      <Loader2 className="size-3 animate-spin" />
-                    ) : (
-                      <Brain className="size-3" />
-                    )}
-                    AI Insight
-                  </div>
-                  <p className="text-sm leading-relaxed text-foreground font-medium selection:bg-primary/20">
-                    {aiInsight || 'Architecting your financial analysis...'}
-                  </p>
-                  {!isAnalyzing && (
-                    <button 
-                      onClick={handleAiRealityCheck}
-                      className="text-[10px] font-bold text-primary/60 hover:text-primary underline uppercase tracking-widest"
-                    >
-                      Regenerate Analysis
-                    </button>
-                  )}
+              <div className="rounded-2xl bg-primary/5 border border-primary/10 p-6 space-y-4 relative overflow-hidden">
+                <div className="absolute top-0 right-0 p-3 opacity-10">
+                  <Brain size={48} className="text-primary" />
                 </div>
-              )}
+                <div className="flex items-center gap-2 text-xs font-bold text-primary uppercase tracking-widest">
+                  {isAnalyzing ? (
+                    <Loader2 className="size-3 animate-spin" />
+                  ) : (
+                    <Brain className="size-3" />
+                  )}
+                  Strategic Audit
+                </div>
+                <p className="text-sm leading-relaxed text-foreground font-medium selection:bg-primary/20">
+                  {aiInsight || (isAnalyzing ? 'Architecting your financial analysis...' : 'Adjust your parameters to generate a custom strategic audit.')}
+                </p>
+                {!isAnalyzing && aiInsight && (
+                  <button 
+                    onClick={handleAiRealityCheck}
+                    className="text-[10px] font-bold text-primary/60 hover:text-primary underline uppercase tracking-widest"
+                  >
+                    Regenerate Analysis
+                  </button>
+                )}
+              </div>
             </div>
 
             {/* What-If Sidekick */}

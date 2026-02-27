@@ -11,21 +11,22 @@ export function Hero() {
             Educational Technology · Not Financial Advice
           </div>
           
-          <h1 className="text-4xl md:text-6xl font-bold tracking-tight text-foreground leading-[1.1]">
-            Master the Math of <span className="text-accent">Your Future.</span>
+          <h1 className="text-4xl md:text-7xl font-bold tracking-tight text-foreground leading-[1.1]">
+            Built for <span className="text-primary">Intelligence.</span><br />
+            Not just math.
           </h1>
           
-          <p className="text-lg md:text-xl text-muted-foreground max-w-2xl mx-auto leading-relaxed">
-            High-precision financial simulations built to educate, not advise. Leverage professional-grade math to architect your transparent financial roadmap.
+          <p className="text-lg md:text-xl text-muted-foreground max-w-2xl mx-auto leading-relaxed font-medium">
+            WealthPath is your AI-First financial architect. Get a 0–100 Health Score, generate automated roadmaps, and chat with a Sidekick that actually knows the US tax system.
           </p>
         </div>
         
         <div className="flex flex-col sm:flex-row justify-center gap-4 pt-4">
-          <Button variant="cta" size="lg" className="h-12 px-8 font-semibold" asChild>
-            <Link href="/calculators">Explore Tools</Link>
+          <Button variant="cta" size="lg" className="h-14 px-10 font-bold uppercase tracking-wider shadow-lg hover:translate-y-[-1px] transition-transform" asChild>
+            <Link href="/score">Check My Health Score</Link>
           </Button>
-          <Button size="lg" variant="outline" className="h-12 px-8 font-semibold" asChild>
-            <Link href="/about">Our Methodology</Link>
+          <Button size="lg" variant="outline" className="h-14 px-10 font-bold uppercase tracking-wider" asChild>
+            <Link href="/sidekick">Ask My Sidekick</Link>
           </Button>
         </div>
       </div>

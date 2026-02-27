@@ -48,11 +48,11 @@ export function AdvantageSection() {
 
         <div className="grid lg:grid-cols-2 gap-12 items-start">
           {/* Comparison Table */}
-          <Card className="overflow-hidden border shadow-sm">
-            <div className="grid grid-cols-3 bg-primary text-primary-foreground p-4 text-[10px] font-bold uppercase tracking-widest text-center">
+          <Card className="overflow-hidden border border-primary/10 shadow-sm rounded-xl">
+            <div className="grid grid-cols-3 bg-primary text-primary-foreground p-4 text-[10px] font-bold uppercase tracking-wider text-center">
               <div>Capability</div>
               <div className="opacity-70">Generic</div>
-              <div className="text-accent">WealthPath</div>
+              <div className="text-accent underline underline-offset-4">WealthPath</div>
             </div>
             <div className="divide-y bg-background">
               {comparisons.map((c, idx) => (
@@ -104,13 +104,13 @@ export function AdvantageSection() {
 
 function BenefitItem({ icon, title, desc }: { icon: React.ReactNode, title: string, desc: string }) {
   return (
-    <Card className="p-6 space-y-3 hover:bg-muted/50 transition-colors border-none shadow-sm">
+    <Card className="p-6 space-y-3 hover:bg-muted transition-colors border-none shadow-sm rounded-xl">
       <div className="h-10 w-10 rounded-lg bg-primary/10 text-primary flex items-center justify-center">
         {icon}
       </div>
       <div className="space-y-1">
-        <h4 className="font-bold text-base">{title}</h4>
-        <p className="text-sm text-muted-foreground leading-relaxed">{desc}</p>
+        <h4 className="font-bold text-base tracking-tight">{title}</h4>
+        <p className="text-sm text-muted-foreground leading-relaxed font-medium">{desc}</p>
       </div>
     </Card>
   )

@@ -75,5 +75,120 @@ export const PLAYBOOKS: Record<string, PlaybookScenario> = {
       }
     ],
     outcomeDescription: 'A comprehensive family financial roadmap designed to eliminate parent-brain financial stress.'
+  },
+  'first-job': {
+    id: 'first-job',
+    title: 'The First Paycheck',
+    description: 'Launch your financial life from zero. Optimize your first 401(k) and emergency fund.',
+    icon: 'graduation-cap',
+    steps: [
+      {
+        id: '401k',
+        calculatorId: 'compound-interest',
+        title: 'The Match Hack',
+        description: 'Calculate why a 100% ROI on the first 6% is non-negotiable.',
+        actionLabel: 'Check Match Value'
+      },
+      {
+        id: 'emergency',
+        calculatorId: 'savings-calculator',
+        title: 'Starter Buffer',
+        description: 'Build your first $2,000 security net.',
+        actionLabel: 'Plan Buffer'
+      }
+    ],
+    outcomeDescription: 'A wealth-building starter kit ensuring you never fall into the debt trap early.'
+  },
+  'buying-first-home': {
+    id: 'buying-first-home',
+    title: 'Path to Homeownership',
+    description: 'The multi-year journey to your first keys. DTI audits and downpayment velocity.',
+    icon: 'home',
+    steps: [
+      {
+        id: 'dti',
+        calculatorId: 'debt-payoff-calculator',
+        title: 'Lender Audit',
+        description: 'Clean up your DTI before applying for a pre-approval.',
+        actionLabel: 'Check Ratios'
+      },
+      {
+        id: 'savings',
+        calculatorId: 'savings-calculator',
+        title: 'Velocity Hack',
+        description: 'Model how soon you can hit a 20% downpayment.',
+        actionLabel: 'Track Savings'
+      }
+    ],
+    outcomeDescription: 'A mortgage-ready profile with optimized debt ratios and a clear purchase timeline.'
+  },
+  'paying-off-debt': {
+    id: 'paying-off-debt',
+    title: 'The Debt Deletion',
+    description: 'Structured high-interest eradication. Avalanche vs. Snowball math.',
+    icon: 'shield-alert',
+    steps: [
+      {
+        id: 'audit',
+        calculatorId: 'debt-payoff-calculator',
+        title: 'Interest Leak Test',
+        description: 'Which debts are costing you the most in lifetime wealth?',
+        actionLabel: 'Run Audit'
+      },
+      {
+        id: 'strategy',
+        calculatorId: 'debt-payoff-calculator',
+        title: 'Execution Path',
+        description: 'Choose your weapon: Avalanche for math, Snowball for momentum.',
+        actionLabel: 'Set Path'
+      }
+    ],
+    outcomeDescription: 'Zero-debt trajectory with a confirmed "Freedom Date".'
+  },
+  'starting-investing': {
+    id: 'starting-investing',
+    title: 'Wealth from Zero',
+    description: 'Transition from saver to investor. Index funds, tax-efficiency, and compounding.',
+    icon: 'trending-up',
+    steps: [
+      {
+        id: 'compounding',
+        calculatorId: 'compound-interest',
+        title: 'The 30-Year View',
+        description: 'Model what $500/mo does over 3 decades vs. your savings account.',
+        actionLabel: 'View Growth'
+      },
+      {
+        id: 'taxes',
+        calculatorId: 'investment-tax-calc',
+        title: 'The Tax Leak',
+        description: 'Calculate the true cost of taxes on your brokerage account.',
+        actionLabel: 'Check Taxes'
+      }
+    ],
+    outcomeDescription: 'A diversified investment philosophy designed for market survival and long-term gains.'
+  },
+  'job-loss': {
+    id: 'job-loss',
+    title: 'Emergency Survival',
+    description: 'Immediate runway extension and expense triage when the income stops.',
+    icon: 'flame',
+    steps: [
+      {
+        id: 'runway',
+        calculatorId: 'savings-calculator',
+        title: 'Cash Burn Audit',
+        description: 'How long until you hit $0? Let\'s find every extra week of runway.',
+        actionLabel: 'Check Runway'
+      },
+      {
+        id: 'triage',
+        calculatorId: 'budget-planner',
+        title: 'Survival Budget',
+        description: 'Identify the "Must-Pay" items to protect your credit and safety.',
+        actionLabel: 'Cut Costs'
+      }
+    ],
+    outcomeDescription: 'A survival checklist focused on capital preservation and time-extension.'
   }
 };

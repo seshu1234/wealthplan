@@ -30,9 +30,9 @@ import {
   ChevronRight,
   Calculator,
   BookOpen,
-  Info,
   Sparkles,
   Map as MapIcon,
+  Brain,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import React from "react";
@@ -110,12 +110,12 @@ const calculatorCategories = [
 ];
 
 const mainLinks = [
+  { title: "Health Score", href: "/score", icon: Sparkles },
+  { title: "Sidekick", href: "/sidekick", icon: Brain },
   { title: "Strategy", href: "/strategy", icon: Sparkles },
   { title: "Roadmaps", href: "/roadmaps", icon: MapIcon },
-  { title: "State Taxes", href: "/taxes/state-matrix", icon: Landmark },
+  { title: "State Taxes", href: "/matrix", icon: Landmark },
   { title: "Guides", href: "/guides", icon: BookOpen },
-  { title: "Blog", href: "/blog", icon: BookOpen },
-  { title: "About", href: "/about", icon: Info },
 ];
 
 // ─── Navbar ────────────────────────────────────────────────────────────────────
@@ -226,10 +226,10 @@ export function Navbar() {
           </div>
 
           {/* CTA — desktop */}
-          <Button variant="cta" size="sm" className="hidden md:flex gap-1.5 font-semibold" asChild>
-            <Link href="/plan">
+          <Button variant="cta" size="sm" className="hidden md:flex gap-1.5 font-bold uppercase tracking-tighter" asChild>
+            <Link href="/score">
               <Sparkles className="size-3.5" />
-              AI Plan
+              Check My Score
             </Link>
           </Button>
 
@@ -399,14 +399,14 @@ function MobileSheet({ pathname }: { pathname: string }) {
 
         {/* Footer CTA */}
         <div className="px-5 py-4 border-t">
-          <Button className="w-full gap-2 font-semibold" asChild>
-            <Link href="/plan">
+          <Button className="w-full gap-2 font-black uppercase tracking-widest" asChild>
+            <Link href="/score">
               <Sparkles className="h-4 w-4" />
-              Get Your Free AI Financial Plan
+              Check My Wealth Score
             </Link>
           </Button>
-          <p className="text-center text-xs text-muted-foreground mt-2">
-            No signup required · Takes 2 minutes
+          <p className="text-center text-[10px] text-muted-foreground mt-3 font-bold uppercase tracking-widest opacity-60">
+            Takes 60 seconds · No signup
           </p>
         </div>
       </SheetContent>
