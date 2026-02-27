@@ -1,36 +1,58 @@
 import { NextRequest } from 'next/server'
-import { GoogleGenerativeAI } from '@google/generative-ai'
+import OpenAI from 'openai'
 
-const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY || '')
+const getAIClient = () => {
+  if (process.env.DEEPSEEK_API_KEY) {
+    return {
+      client: new OpenAI({
+        apiKey: process.env.DEEPSEEK_API_KEY,
+        baseURL: 'https://api.deepseek.com',
+      }),
+      model: 'deepseek-chat',
+    }
+  }
+  if (process.env.OPENAI_API_KEY) {
+    return {
+      client: new OpenAI({
+        apiKey: process.env.OPENAI_API_KEY,
+      }),
+      model: 'gpt-4o-mini',
+    }
+  }
+  return null
+}
 
 const PLAN_PROMPT = (answers: Record<string, string>) => `
-You are a certified financial planner AI. Based on the user's situation below, create a concise, personalized 1-page financial action plan with prioritized steps.
+You are a Strategic Financial Auditor AI. Based on the user's data provided below, create a high-authority, prioritized 1-page financial action plan.
 
-User profile:
+User Profile:
 - Age: ${answers.age}
-- Annual income: ${answers.income}
-- Monthly debt payments: ${answers.debt}
-- Primary financial goal: ${answers.goal}
-- Timeline: ${answers.timeline}
+- Annual Gross Income: ${answers.income}
+- Monthly Debt Obligations: ${answers.debt}
+- Current Liquid Assets: ${answers.assets}
+- Primary Financial Objective: ${answers.goal}
+- Target Timeline: ${answers.timeline}
 
-Write a financial plan with exactly this structure:
+Structure the plan with these sections:
 
-## Your Financial Snapshot
-2-3 sentences assessing their overall situation candidly.
+## Strategic Audit Snapshot
+2-3 sentences providing a direct mathematical assessment of their trajectory and identifying the "One Big Win" they should focus on.
 
-## Priority Action Steps
-Numbered list of 5-7 specific, actionable steps ordered by urgency. Each step must:
-- Start with a verb
-- Include a specific number (amount, percentage, or timeframe)
-- Be achievable within their timeline
+## Prioritized Action Roadmap
+- Provide 4-6 specific, numbered steps.
+- Each step must start with a verb and include a specific mathematical target.
+- CRITICAL: For each step, if it relates to a specific financial calculation, you MUST include a link token at the end in this exact format: [Link: slug]
+  Relevant Slugs: compound-interest-calculator, 401k-match-calculator, debt-avalanche-calculator, fire-retirement-calculator, investment-calculator, state-tax-matrix.
 
-## Quick Wins (Do This Week)
-3 bullet points they can act on immediately, no excuses.
+## High-Leverage Quick Wins
+3 bullet points for immediate execution (within 72 hours).
 
-## 12-Month Milestone
-One concrete, measurable goal to aim for by this time next year.
+## 12-Month Performance Target
+One clear, measurable milestone to hit by this time next year.
 
-Be specific to their numbers. No generic advice. No disclaimers. Use plain language.`
+Be direct, analytical, and professional. No disclaimers. Use plain language but with high authority.`
+
+const FALLBACK_PLAN = `## Strategic Audit Snapshot\nBased on your inputs, you have a solid foundation to work from. The key is building consistent habits around saving and debt reduction to hit your long-term objectives.\n\n## Prioritized Action Roadmap\n1. Build an emergency fund of at least 3 months of expenses. [Link: compound-interest-calculator]\n2. Maximize your 401(k) employer match immediately. [Link: 401k-match-calculator]\n3. Pay off all high-interest debt (>7%) using the avalanche method. [Link: debt-avalanche-calculator]\n4. Open a Roth IRA and contribute a fixed amount monthly. [Link: fire-retirement-calculator]\n5. Automate your savings workflow to ensure consistency.\n\n## High-Leverage Quick Wins\n- Set up an automatic transfer to savings for your next payday.\n- Check your credit score for free at annualcreditreport.com.\n- Audit and cancel at least two unused monthly subscriptions.\n\n## 12-Month Performance Target\nHave 3 months of expenses fully funded and be contributing at least 15% of your income towards retirement.`;
 
 export async function POST(request: NextRequest) {
   try {
@@ -40,36 +62,58 @@ export async function POST(request: NextRequest) {
       return new Response('Missing answers', { status: 400 })
     }
 
-    if (!process.env.GEMINI_API_KEY) {
-      return new Response(
-        `## Your Financial Snapshot\nBased on your inputs, you have a solid foundation to work from. The key is building consistent habits around saving and debt reduction.\n\n## Priority Action Steps\n1. Build a 3-month emergency fund of at least $5,000\n2. Maximize your 401(k) employer match — it's a 100% return\n3. Pay off any debt above 7% interest before investing\n4. Open a Roth IRA and contribute $500/month\n5. Automate all savings on payday\n\n## Quick Wins (Do This Week)\n- Set up automatic transfer to savings\n- Check your credit score (free at annualcreditreport.com)\n- Cancel unused subscriptions\n\n## 12-Month Milestone\nHave 3 months of expenses saved and be contributing to at least one retirement account.`,
-        { headers: { 'Content-Type': 'text/plain' } }
-      )
+    const ai = getAIClient()
+
+    if (!ai) {
+      return new Response(FALLBACK_PLAN, { headers: { 'Content-Type': 'text/plain' } })
     }
 
-    const model = genAI.getGenerativeModel({ model: 'gemini-2.0-flash' })
-    const result = await model.generateContentStream(PLAN_PROMPT(answers))
+    const stream = await ai.client.chat.completions.create({
+      model: ai.model,
+      messages: [{ role: 'user', content: PLAN_PROMPT(answers) }],
+      stream: true,
+    })
 
     const encoder = new TextEncoder()
-    const stream = new ReadableStream({
+    const readableStream = new ReadableStream({
       async start(controller) {
-        for await (const chunk of result.stream) {
-          const text = chunk.text()
-          if (text) controller.enqueue(encoder.encode(text))
+        try {
+          for await (const chunk of stream) {
+            const content = chunk.choices[0]?.delta?.content || ""
+            if (content) controller.enqueue(encoder.encode(content))
+          }
+        } catch (streamErr) {
+          console.error('Streaming error:', streamErr)
+        } finally {
+          controller.close()
         }
-        controller.close()
       },
     })
 
-    return new Response(stream, {
+    return new Response(readableStream, {
       headers: {
         'Content-Type': 'text/plain; charset=utf-8',
         'Transfer-Encoding': 'chunked',
         'Cache-Control': 'no-cache',
       },
     })
-  } catch (err) {
+  } catch (err: unknown) {
     console.error('Plan API error:', err)
-    return new Response('Failed to generate plan', { status: 500 })
+    
+    // Handle status codes or specific messages from OpenAI/DeepSeek
+    const errorBody = err as { status?: number; message?: string }
+    if (errorBody.status === 429 || errorBody.message?.includes('429')) {
+      return new Response(
+        `## Strategic Audit Snapshot\nOur high-priority AI Auditor is currently reaching its capacity. Below is your **Standard Strategic Roadmap** based on the data provided.\n\n${FALLBACK_PLAN.split('## Strategic Audit Snapshot\n')[1]}`,
+        { 
+          headers: { 
+            'Content-Type': 'text/plain; charset=utf-8',
+            'X-AI-Fallback': 'true'
+          } 
+        }
+      )
+    }
+
+    return new Response('Failed to generate plan. Please try again.', { status: 500 })
   }
 }

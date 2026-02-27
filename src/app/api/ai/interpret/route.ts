@@ -1,7 +1,26 @@
 import { NextRequest } from 'next/server'
-import { GoogleGenerativeAI } from '@google/generative-ai'
+import OpenAI from 'openai'
 
-const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY || '')
+const getAIClient = () => {
+  if (process.env.DEEPSEEK_API_KEY) {
+    return {
+      client: new OpenAI({
+        apiKey: process.env.DEEPSEEK_API_KEY,
+        baseURL: 'https://api.deepseek.com',
+      }),
+      model: 'deepseek-chat',
+    }
+  }
+  if (process.env.OPENAI_API_KEY) {
+    return {
+      client: new OpenAI({
+        apiKey: process.env.OPENAI_API_KEY,
+      }),
+      model: 'gpt-4o-mini',
+    }
+  }
+  return null
+}
 
 // Prompt templates for each calculator type
 const PROMPTS: Record<string, (inputs: Record<string, unknown>, results: Record<string, unknown>) => string> = {
@@ -71,8 +90,10 @@ export async function POST(request: NextRequest) {
   try {
     const { calculatorId, inputs, results } = await request.json()
 
-    if (!process.env.GEMINI_API_KEY) {
-      // Graceful fallback if API key not configured
+    const ai = getAIClient()
+
+    if (!ai) {
+      // Graceful fallback if AI key not configured
       return new Response(
         "Great calculation! Based on your inputs, you're making solid financial decisions. Consider reviewing your numbers periodically as your situation changes — even small adjustments now can make a significant difference over time.",
         { headers: { 'Content-Type': 'text/plain' } }
@@ -84,23 +105,29 @@ export async function POST(request: NextRequest) {
       ? promptFn(inputs, results)
       : DEFAULT_PROMPT(inputs, results, calculatorId)
 
-    const model = genAI.getGenerativeModel({ model: 'gemini-2.0-flash' })
-
-    // Stream the response
-    const result = await model.generateContentStream(prompt)
+    const stream = await ai.client.chat.completions.create({
+      model: ai.model,
+      messages: [{ role: 'user', content: prompt }],
+      stream: true,
+    })
 
     const encoder = new TextEncoder()
-    const stream = new ReadableStream({
+    const readableStream = new ReadableStream({
       async start(controller) {
-        for await (const chunk of result.stream) {
-          const text = chunk.text()
-          if (text) controller.enqueue(encoder.encode(text))
+        try {
+          for await (const chunk of stream) {
+            const content = chunk.choices[0]?.delta?.content || ""
+            if (content) controller.enqueue(encoder.encode(content))
+          }
+        } catch (streamErr) {
+          console.error('Streaming error:', streamErr)
+        } finally {
+          controller.close()
         }
-        controller.close()
       },
     })
 
-    return new Response(stream, {
+    return new Response(readableStream, {
       headers: {
         'Content-Type': 'text/plain; charset=utf-8',
         'Transfer-Encoding': 'chunked',
@@ -113,15 +140,14 @@ export async function POST(request: NextRequest) {
 
     // Gracefully handle quota / rate limit — return 200 with fallback text
     // so the UI shows something useful instead of an error state
-    const isQuotaError =
-      (err instanceof Error && err.message.includes('429')) ||
-      (typeof err === 'object' && err !== null && 'status' in err && (err as { status: number }).status === 429)
+    const errorBody = err as { status?: number; message?: string }
+    const isQuotaError = errorBody.status === 429 || errorBody.message?.includes('429')
 
     if (isQuotaError) {
       return new Response(
-        "AI insights are temporarily unavailable (free-tier quota reached). " +
+        "AI insights are temporarily unavailable (provider quota reached). " +
         "Your numbers look solid — adjust the sliders to explore different scenarios. " +
-        "To restore AI insights, upgrade your Gemini API key at ai.google.dev.",
+        "To restore AI insights, ensure your API keys for DeepSeek or OpenAI are active.",
         {
           status: 200,
           headers: { 'Content-Type': 'text/plain', 'X-AI-Fallback': 'quota' },

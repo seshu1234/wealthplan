@@ -6,11 +6,7 @@ import {
   Search, 
   MapPin, 
   ArrowUpDown, 
-  Info, 
-  Filter, 
   TrendingUp, 
-  TrendingDown, 
-  Minus,
   AlertCircle,
   HelpCircle,
   ArrowRight
@@ -18,13 +14,7 @@ import {
 import { Input } from '@/components/ui/input'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
-import { Card, CardContent } from '@/components/ui/card'
-import { 
-  Tooltip,
-  TooltipContent,
-  TooltipProvider,
-  TooltipTrigger,
-} from "@/components/ui/tooltip"
+import Link from 'next/link'
 
 // Simplified 2024 State Tax Data (Representative Averages)
 const stateTaxData = [
@@ -165,7 +155,7 @@ export default function StateTaxMatrixPage() {
               </thead>
               <tbody className="divide-y divide-border/20">
                 <AnimatePresence mode="popLayout">
-                  {filteredAndSortedData.map((row, idx) => (
+                  {filteredAndSortedData.map((row) => (
                     <motion.tr 
                       key={row.state}
                       initial={{ opacity: 0 }}
@@ -203,7 +193,7 @@ export default function StateTaxMatrixPage() {
             {filteredAndSortedData.length === 0 && (
               <div className="p-20 text-center space-y-4">
                 <AlertCircle className="h-12 w-12 text-muted-foreground/30 mx-auto" />
-                <p className="text-muted-foreground text-sm italic">No states matching "{searchTerm}" found. Try another search.</p>
+                <p className="text-muted-foreground text-sm italic">No states matching &quot;{searchTerm}&quot; found. Try another search.</p>
               </div>
             )}
           </div>
@@ -254,7 +244,7 @@ export default function StateTaxMatrixPage() {
   )
 }
 
-function TableHeader({ label, field, currentSort, order, onSort }: { label: string, field: string, currentSort: string, order: string, onSort: () => void }) {
+function TableHeader({ label, field, currentSort, onSort }: { label: string, field: string, currentSort: string, order: string, onSort: () => void }) {
   const isActive = currentSort === field
   return (
     <th className="p-6 cursor-pointer group" onClick={onSort}>

@@ -1,6 +1,14 @@
 import { notFound } from 'next/navigation'
 import { createClient } from '@/lib/supabase/server'
 import { DynamicCalculator } from '@/components/calculator/dynamic-calculator'
+import { CalculatorConfig } from '@/lib/calculator/engine'
+
+interface CalculatorEmbed {
+  title: string;
+  slug: string;
+  config: CalculatorConfig;
+  embed_color: string | null;
+}
 
 // Return correct headers for iframe embedding
 export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }) {
@@ -29,7 +37,7 @@ export default async function EmbedPage({ params }: { params: Promise<{ slug: st
     .eq('slug', slug)
     .eq('status', 'published')
     .eq('embeddable', true)
-    .single()) as any
+    .single()) as unknown as { data: CalculatorEmbed }
 
   if (!calc) notFound()
 
@@ -56,7 +64,7 @@ export default async function EmbedPage({ params }: { params: Promise<{ slug: st
         </div>
 
         {/* Dynamic calculator from config */}
-        <DynamicCalculator config={calc} />
+        <DynamicCalculator calculatorId={calc.slug} config={calc.config} />
       </div>
     </>
   )

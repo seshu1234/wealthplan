@@ -1,46 +1,55 @@
 'use client'
 
 import { useState, useRef, useCallback, useEffect } from 'react'
-import { Sparkles, RefreshCw, ArrowRight, ArrowLeft, Check } from 'lucide-react'
+import { Sparkles, RefreshCw, Check, Loader2 } from 'lucide-react'
+import { motion } from 'framer-motion'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
-import { Label } from '@/components/ui/label'
 import Link from 'next/link'
+
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card'
 
 const QUESTIONS = [
   {
     id: 'age',
     label: 'How old are you?',
     placeholder: 'e.g. 32',
-    hint: 'We use this to tailor retirement timelines to your situation.',
+    hint: 'Tailors retirement timelines to your situation.',
     type: 'number',
   },
   {
     id: 'income',
-    label: "What's your annual household income?",
+    label: "Annual household income?",
     placeholder: 'e.g. $85,000',
-    hint: 'Include salary, freelance, side income — gross is fine.',
+    hint: 'Gross income including salary and side income.',
+    type: 'text',
+  },
+  {
+    id: 'assets',
+    label: 'Liquid assets?',
+    placeholder: 'e.g. $12,500',
+    hint: 'Savings, cash, and brokerage accounts.',
     type: 'text',
   },
   {
     id: 'debt',
-    label: 'How much do you pay toward debt each month?',
-    placeholder: 'e.g. $1,200 (student loans, car, credit cards)',
-    hint: 'Exclude your mortgage if you own — that comes later.',
+    label: 'Monthly debt payments?',
+    placeholder: 'e.g. $1,200',
+    hint: 'Student loans, car, credit cards (exclude mortgage).',
     type: 'text',
   },
   {
     id: 'goal',
-    label: "What's your #1 financial goal right now?",
-    placeholder: 'e.g. Pay off student loans, buy a home, retire early, build an emergency fund',
-    hint: 'Be specific — the more detail you give, the better your plan.',
+    label: "Top financial goal?",
+    placeholder: 'e.g. Buy a home, retire early',
+    hint: 'Be specific for a better plan.',
     type: 'text',
   },
   {
     id: 'timeline',
-    label: 'What timeline are you working with?',
-    placeholder: 'e.g. 5 years, by age 50, within 18 months',
-    hint: 'No right answer — just gives us context for prioritizing steps.',
+    label: 'Target timeline?',
+    placeholder: 'e.g. 5 years, by age 50',
+    hint: 'Provides context for prioritizing steps.',
     type: 'text',
   },
 ]
@@ -58,11 +67,9 @@ export default function PlanPage() {
   const isLast = step === QUESTIONS.length - 1
   const progress = ((step) / QUESTIONS.length) * 100
 
-  // Pre-fill if going back — intentionally only reacts to step change
-  // eslint-disable-next-line react-hooks/exhaustive-deps
   useEffect(() => {
     setCurrentAnswer(answers[q?.id] ?? '')
-  }, [step])
+  }, [step, answers, q?.id])
 
   const handleNext = useCallback(async () => {
     if (!currentAnswer.trim()) return
@@ -75,7 +82,6 @@ export default function PlanPage() {
       return
     }
 
-    // Final step — generate plan
     setStreaming(true)
     setPlan('')
     if (abortRef.current) abortRef.current.abort()
@@ -114,126 +120,144 @@ export default function PlanPage() {
     }
   }
 
+  const renderLine = (line: string, i: number) => {
+    const linkRegex = /\[Link:\s*([\w-]+)\]/g
+    const parts = line.split(linkRegex)
+    
+    if (line.startsWith('## ')) {
+      return <h3 key={i} className="text-lg font-semibold mt-8 mb-4">{line.slice(3)}</h3>
+    }
+    
+    const isBullet = line.trim().startsWith('- ') || /^\d+\./.test(line)
+    
+    return (
+      <div key={i} className={`flex flex-wrap items-center gap-2 my-2 ${isBullet ? 'pl-4 border-l-2 border-muted' : ''}`}>
+        {parts.map((part, index) => {
+          if (index % 2 === 0) {
+            let cleanPart = part
+            if (cleanPart.startsWith('- ')) cleanPart = cleanPart.slice(2)
+            if (/^\d+\./.test(cleanPart)) cleanPart = cleanPart.replace(/^\d+\./, '')
+            return <span key={index} className="text-sm text-foreground">{cleanPart}</span>
+          } else {
+            return (
+              <Button key={index} size="sm" variant="link" className="h-auto p-0 text-primary font-semibold" asChild>
+                <Link href={`/calculators/${part}`}>
+                  Calculator →
+                </Link>
+              </Button>
+            )
+          }
+        })}
+      </div>
+    )
+  }
+
   return (
     <div className="min-h-screen bg-background">
-      <div className="max-w-2xl mx-auto px-4 py-12">
+      <div className="max-w-3xl mx-auto px-4 py-12">
 
-        {/* Header */}
-        <div className="flex items-center gap-2 mb-8">
-          <Sparkles className="h-5 w-5 text-[hsl(var(--accent-brand))]" />
-          <span className="font-bold text-lg">AI Financial Plan Builder</span>
-          <Link href="/calculators" className="ml-auto text-sm text-muted-foreground hover:text-foreground transition-colors">
-            ← Back to calculators
-          </Link>
+        <div className="flex items-center justify-between mb-8">
+          <div className="flex items-center gap-2">
+            <Sparkles className="h-5 w-5 text-primary" />
+            <h1 className="text-xl font-bold tracking-tight">AI Financial Plan Builder</h1>
+          </div>
+          <Button variant="ghost" size="sm" asChild>
+            <Link href="/calculators">← Back</Link>
+          </Button>
         </div>
 
-        {/* Plan result page */}
         {(streaming || done) ? (
           <div className="space-y-6">
-            <div className="rounded-xl border p-6 space-y-4 bg-gradient-to-br from-[hsl(var(--accent-brand-muted))] to-background">
-              <div className="flex items-center gap-2">
-                <Sparkles className="h-4 w-4 text-[hsl(var(--accent-brand))]" />
-                <span className="font-semibold text-sm text-[hsl(var(--accent-brand))] uppercase tracking-wide">Your Personalized Financial Plan</span>
-                {streaming && (
-                  <span className="ml-auto text-xs text-muted-foreground animate-pulse">Generating…</span>
-                )}
-              </div>
-
-              {/* Render markdown-ish plan with simple formatting */}
-              <div className="prose prose-sm dark:prose-invert max-w-none">
-                {plan.split('\n').map((line, i) => {
-                  if (line.startsWith('## ')) return <h2 key={i} className="text-base font-bold mt-4 mb-1">{line.slice(3)}</h2>
-                  if (line.startsWith('- ')) return <p key={i} className="text-sm ml-3 my-0.5">• {line.slice(2)}</p>
-                  if (/^\d+\./.test(line)) return <p key={i} className="text-sm ml-3 my-0.5 font-medium">{line}</p>
-                  if (line.trim() === '') return <div key={i} className="h-2" />
-                  return <p key={i} className="text-sm my-1">{line}</p>
-                })}
-                {streaming && (
-                  <span className="inline-block w-1 h-4 bg-[hsl(var(--accent-brand))] animate-pulse rounded-sm" />
-                )}
-              </div>
-            </div>
+            <Card className="border-2 border-primary/10">
+              <CardHeader className="pb-4">
+                <CardTitle className="text-sm font-bold uppercase tracking-wider text-primary flex items-center gap-2">
+                  <Sparkles className="h-4 w-4" />
+                  Your Audit Roadmap
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="space-y-1">
+                  {plan.split('\n').filter(l => l.trim() !== '').map((line, i) => renderLine(line, i))}
+                  {streaming && <Loader2 className="h-4 w-4 animate-spin text-muted-foreground mt-4" />}
+                </div>
+              </CardContent>
+            </Card>
 
             {done && (
-              <div className="flex gap-3">
-                <Button variant="outline" onClick={() => { setStep(0); setPlan(''); setDone(false); setAnswers({}) }}>
-                  <RefreshCw className="h-4 w-4 mr-2" /> Start Over
+              <div className="flex flex-col sm:flex-row gap-3">
+                <Button className="flex-1" onClick={() => { setStep(0); setPlan(''); setDone(false); setAnswers({}) }}>
+                  <RefreshCw className="h-4 w-4 mr-2" /> New Plan
                 </Button>
-                <Button onClick={() => window.print()} variant="outline">
-                  🖨 Print / Save PDF
-                </Button>
-                <Button asChild>
-                  <Link href="/calculators">Explore Calculators →</Link>
+                <Button className="flex-1" onClick={() => window.print()} variant="outline">
+                  Save PDF
                 </Button>
               </div>
             )}
+
+            <p className="text-[10px] text-center text-muted-foreground">
+              Educational Disclaimer: WealthPath AI provides technology-driven insights only. Non-advisory service.
+            </p>
           </div>
         ) : (
-          /* Question wizard */
-          <div className="space-y-8">
-            {/* Progress bar */}
+          <div className="space-y-6">
             <div className="space-y-2">
-              <div className="flex justify-between text-xs text-muted-foreground">
-                <span>Question {step + 1} of {QUESTIONS.length}</span>
+              <div className="flex justify-between text-xs font-medium text-muted-foreground">
+                <span>Step {step + 1} of {QUESTIONS.length}</span>
                 <span>{Math.round(progress)}% complete</span>
               </div>
-              <div className="h-1.5 bg-muted rounded-full overflow-hidden">
-                <div
-                  className="h-full bg-[hsl(var(--accent-brand))] rounded-full transition-all duration-500"
-                  style={{ width: `${progress}%` }}
+              <div className="h-1 dark:bg-muted bg-neutral-100 rounded-full overflow-hidden">
+                <motion.div
+                  initial={{ width: 0 }}
+                  animate={{ width: `${progress}%` }}
+                  className="h-full bg-primary"
                 />
               </div>
             </div>
 
-            {/* Question card */}
-            <div className="rounded-xl border p-8 space-y-6 shadow-sm">
-              <div className="space-y-1">
-                <Label className="text-xl font-semibold leading-snug">{q.label}</Label>
-                <p className="text-sm text-muted-foreground">{q.hint}</p>
-              </div>
+            <Card className="shadow-lg">
+              <CardHeader className="space-y-1">
+                <CardTitle className="text-2xl font-bold leading-tight">{q.label}</CardTitle>
+                <CardDescription className="italic">{q.hint}</CardDescription>
+              </CardHeader>
+              <CardContent className="space-y-6">
+                <Input
+                  type={q.type}
+                  placeholder={q.placeholder}
+                  value={currentAnswer}
+                  onChange={e => setCurrentAnswer(e.target.value)}
+                  onKeyDown={handleKeyDown}
+                  className="text-lg h-12"
+                  autoFocus
+                />
 
-              <Input
-                type={q.type}
-                placeholder={q.placeholder}
-                value={currentAnswer}
-                onChange={e => setCurrentAnswer(e.target.value)}
-                onKeyDown={handleKeyDown}
-                className="text-base h-12"
-                autoFocus
-              />
-
-              <div className="flex gap-3">
-                {step > 0 && (
-                  <Button variant="outline" onClick={() => setStep(s => s - 1)}>
-                    <ArrowLeft className="h-4 w-4 mr-1" /> Back
-                  </Button>
-                )}
-                <Button
-                  className="flex-1"
-                  onClick={handleNext}
-                  disabled={!currentAnswer.trim()}
-                >
-                  {isLast ? (
-                    <><Sparkles className="h-4 w-4 mr-2" /> Generate My Plan</>
-                  ) : (
-                    <>Next <ArrowRight className="h-4 w-4 ml-2" /></>
+                <div className="flex gap-3">
+                  {step > 0 && (
+                    <Button variant="outline" onClick={() => setStep(s => s - 1)}>
+                      Back
+                    </Button>
                   )}
-                </Button>
-              </div>
-
-              {/* Answered questions summary */}
-              {Object.keys(answers).length > 0 && (
-                <div className="pt-4 border-t space-y-1">
-                  {QUESTIONS.slice(0, step).map(prev => (
-                    <div key={prev.id} className="flex items-center gap-2 text-xs text-muted-foreground">
-                      <Check className="h-3 w-3 text-green-500 shrink-0" />
-                      <span className="font-medium">{prev.label.split('?')[0]}?</span>
-                      <span className="text-foreground ml-auto">{answers[prev.id]}</span>
-                    </div>
-                  ))}
+                  <Button
+                    className="flex-1"
+                    onClick={handleNext}
+                    disabled={!currentAnswer.trim()}
+                  >
+                    {isLast ? "Generate Plan" : "Continue"}
+                  </Button>
                 </div>
-              )}
-            </div>
+
+                {Object.keys(answers).length > 0 && (
+                  <div className="pt-6 border-t grid grid-cols-1 sm:grid-cols-2 gap-3">
+                    {QUESTIONS.slice(0, step).map(prev => (
+                      <div key={prev.id} className="flex items-center gap-2 text-xs">
+                        <Check className="h-3 w-3 text-emerald-500 shrink-0" />
+                        <span className="text-muted-foreground font-semibold uppercase tracking-tighter">{prev.id}:</span>
+                        <span className="text-foreground truncate">{answers[prev.id]}</span>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </CardContent>
+            </Card>
           </div>
         )}
       </div>

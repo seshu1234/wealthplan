@@ -27,7 +27,7 @@ import {
   AccordionTrigger,
 } from "@/components/ui/accordion"
 import { Button } from '@/components/ui/button'
-import { Brain, Loader2 } from 'lucide-react'
+import { Brain, Loader2, AlertTriangle } from 'lucide-react'
 
 interface DynamicCalculatorProps {
   calculatorId: string
@@ -150,6 +150,78 @@ export function DynamicCalculator({ calculatorId, config }: DynamicCalculatorPro
     }
   }
 
+  // Red Flag Detection Logic (Rule-based + Narrated)
+  const redFlags = useMemo(() => {
+    const flags: { title: string; body: string; severity: 'warning' | 'critical' }[] = []
+    
+    const context = { ...values, ...results.outputs }
+    
+    // 1. Debt-to-Income (Generic Rule)
+    if (context.income && context.monthlyDebt) {
+      const dti = (Number(context.monthlyDebt) / (Number(context.income) / 12)) * 100
+      if (dti > 43) {
+        flags.push({
+          title: 'High Debt-to-Income Ratio',
+          body: `Your DTI of ${dti.toFixed(1)}% exceeds the 43% threshold most lenders accept for a mortgage.`,
+          severity: 'critical'
+        })
+      }
+    }
+
+    // 2. Compounding Frequency Warning
+    if (context.frequency === 'Annually' || context.frequency === 'none') {
+      flags.push({
+        title: 'Compounding Potential',
+        body: 'Switching to Monthly compounding could significantly increase your total earned interest over time.',
+        severity: 'warning'
+      })
+    }
+
+    // 3. Savings Gap (Rule of thumb)
+    if (context.retirementAge && context.targetAmount && context.finalBalance) {
+      const gap = Number(context.targetAmount) - Number(context.finalBalance)
+      if (gap > 0) {
+        flags.push({
+          title: 'Retirement Shortfall',
+          body: `You are projected to be $${gap.toLocaleString()} short of your target at age ${context.retirementAge}.`,
+          severity: 'critical'
+        })
+      }
+    }
+
+    // 4. Inflation Reality Check
+    if (context.inflation === 0) {
+      flags.push({
+        title: 'Inflation Blindspot',
+        body: 'Modeling with 0% inflation is unrealistic for long-term planning. Historical averages are 2.5-3%.',
+        severity: 'warning'
+      })
+    }
+
+    // 5. Negative Cash Flow
+    if (context.income && context.monthlyExpenses) {
+      if (Number(context.monthlyExpenses) > (Number(context.income) / 12)) {
+        flags.push({
+          title: 'Deficit Risk',
+          body: 'Your projected monthly expenses currently exceed your monthly net income.',
+          severity: 'critical'
+        })
+      }
+    }
+
+    return flags
+  }, [values, results.outputs])
+
+  // AI Scenario Narrator (One-liner helper)
+  const scenarioNarrative = useMemo(() => {
+    if (results.outputs.finalBalance) {
+      const balance = Number(results.outputs.finalBalance)
+      if (balance > 1000000) return "You're on track to join the Millionaire's Club at this pace. 🏆"
+      if (balance > 500000) return "Solid trajectory. You're building substantial legacy wealth. 🏛️"
+    }
+    return "Optimizing your financial path based on real-time inputs. 📈"
+  }, [results.outputs])
+
   const formatValue = (val: number | string | undefined, format: 'currency' | 'percent' | 'number', textOnly = false) => {
     if (val === undefined || val === null) return '—'
     const num = Number(val)
@@ -191,20 +263,29 @@ export function DynamicCalculator({ calculatorId, config }: DynamicCalculatorPro
   const content = config.content || {}
 
   return (
-    <motion.div 
-      initial={{ opacity: 0, y: 20 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.6, ease: "easeOut" }}
-      className="space-y-12"
-    >
+    <div className="space-y-8">
+      {/* Standalone Narrative Impact Section */}
+      {content.highlight && (
+        <Card className="p-6 border-l-4 border-l-primary bg-primary/5">
+          <div className="flex gap-4">
+            <Quote className="h-5 w-5 text-primary shrink-0 opacity-40" />
+            <div className="space-y-2">
+              <h3 className="text-sm font-bold uppercase tracking-widest text-primary">Key Takeaway</h3>
+              <p className="text-sm font-medium leading-relaxed italic text-foreground/80">
+                &ldquo;{bridgeVariable(content.highlight)}&rdquo;
+              </p>
+            </div>
+          </div>
+        </Card>
+      )}
       {/* Main Interactive Section - Combined Card */}
-      <Card className="border shadow-lg overflow-hidden backdrop-blur-sm bg-card/95">
+      <Card className="border-2 border-primary/5 shadow-sm overflow-hidden">
         <div className="grid grid-cols-1 lg:grid-cols-12 divide-y lg:divide-y-0 lg:divide-x">
           {/* Left: Input Parameters */}
-          <div className="lg:col-span-5 bg-muted/5 p-6 sm:p-8 space-y-8">
+          <div className="lg:col-span-5 bg-muted/30 p-6 sm:p-8 space-y-6">
             <div className="flex items-center gap-2 pb-2 border-b">
               <ChevronDown className="h-4 w-4 text-primary" />
-              <h2 className="text-sm font-bold uppercase tracking-wider text-muted-foreground">Parameters</h2>
+              <h2 className="text-xs font-bold uppercase tracking-widest text-muted-foreground">Parameters</h2>
             </div>
             <div className="space-y-8">
               {config.inputs?.map((input) => (
@@ -225,7 +306,6 @@ export function DynamicCalculator({ calculatorId, config }: DynamicCalculatorPro
                       max={input.max ?? 100}
                       step={input.step ?? (input.max && input.max > 100 ? 1 : 0.1)}
                       onValueChange={([v]) => setValues(prev => ({ ...prev, [input.id]: v }))}
-                      className="py-1"
                     />
                   ) : (
                     <Input
@@ -247,25 +327,61 @@ export function DynamicCalculator({ calculatorId, config }: DynamicCalculatorPro
           </div>
 
           {/* Right: Real-time Results & Summary */}
-          <div className="lg:col-span-7 p-6 sm:p-8 space-y-8 bg-card">
-            <div className="flex items-center gap-2 pb-2 border-b">
-              <Sparkles className="h-4 w-4 text-primary" />
-              <h2 className="text-sm font-bold uppercase tracking-wider text-muted-foreground">Calculated Projection</h2>
+          <div className="lg:col-span-7 p-6 sm:p-8 space-y-6 bg-card">
+            <div className="flex items-center justify-between gap-4 pb-2 border-b">
+              <div className="flex items-center gap-2">
+                <Sparkles className="h-4 w-4 text-primary" />
+                <h2 className="text-xs font-bold uppercase tracking-widest text-muted-foreground">Results</h2>
+              </div>
+              <motion.span 
+                key={scenarioNarrative}
+                initial={{ opacity: 0, x: 20 }}
+                animate={{ opacity: 1, x: 0 }}
+                className="text-[10px] font-bold text-primary italic hidden sm:block"
+              >
+                {scenarioNarrative}
+              </motion.span>
             </div>
 
-            {/* Results Grid - High Visibility */}
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               {config.outputs?.map((output) => (
-                <div key={output.id} className="p-5 rounded-xl border bg-muted/10 space-y-1">
-                  <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest leading-none">
+                <div key={output.id} className="p-4 rounded-lg border bg-muted/20 space-y-1">
+                  <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest">
                     {output.label}
                   </p>
-                  <p className={`text-2xl sm:text-3xl font-bold tabular-nums tracking-tight ${variantClasses[output.variant || 'neutral']}`}>
+                  <p className={`text-2xl font-bold tabular-nums ${variantClasses[output.variant || 'neutral']}`}>
                     {formatValue(results.outputs[output.id], output.format)}
                   </p>
                 </div>
               ))}
             </div>
+
+            {/* Red Flag Alerts */}
+            {redFlags.length > 0 && (
+              <div className="space-y-3">
+                {redFlags.map((flag, i) => (
+                  <motion.div 
+                    initial={{ opacity: 0, x: -10 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    transition={{ delay: i * 0.1 }}
+                    key={flag.title} 
+                    className={`p-4 rounded-xl border flex items-start gap-4 ${
+                      flag.severity === 'critical' 
+                        ? 'bg-destructive/5 border-destructive/20' 
+                        : 'bg-orange-500/5 border-orange-500/20'
+                    }`}
+                  >
+                    <AlertTriangle className={`h-5 w-5 shrink-0 mt-0.5 ${
+                      flag.severity === 'critical' ? 'text-destructive' : 'text-orange-500'
+                    }`} />
+                    <div className="space-y-1">
+                      <p className="text-xs font-bold uppercase tracking-wider">{flag.title}</p>
+                      <p className="text-xs text-muted-foreground font-medium">{flag.body}</p>
+                    </div>
+                  </motion.div>
+                ))}
+              </div>
+            )}
 
             {/* AI Reality Check Trigger */}
             <div className="pt-4 border-t border-dashed">
@@ -612,6 +728,6 @@ export function DynamicCalculator({ calculatorId, config }: DynamicCalculatorPro
           .rounded-\\[2rem\\] { border-radius: 8px !important; border: 1px solid #ddd !important; }
         }
       `}} />
-    </motion.div>
+    </div>
   )
 }

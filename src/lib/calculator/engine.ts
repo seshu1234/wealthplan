@@ -48,6 +48,7 @@ export type CalculatorConfig = {
   charts?: CalculatorChart[];
   content?: {
     intro?: string;
+    highlight?: string;
     howToUse?: string[];
     explanation?: { title: string; body: string };
     deepDive?: { title: string; body: string };
