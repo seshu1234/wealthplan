@@ -2,13 +2,25 @@ import { notFound } from "next/navigation";
 import { Metadata } from "next";
 import { createClient } from "@/lib/supabase/server";
 import { CalculatorShell } from "@/components/calculator/calculator-shell";
-import { FaqSection } from "@/components/calculator/faq-section";
 import { SchemaMarkup } from "@/components/calculator/schema-markup";
-import { CalcArticle, DataTable } from "@/components/calculator/calc-article";
 import { DynamicCalculator } from "@/components/calculator/dynamic-calculator";
+import { CalculatorConfig } from "@/lib/calculator/engine";
 
 // Server-side data fetching
-async function getCalculator(slug: string) {
+interface CalculatorData {
+  slug: string;
+  title: string;
+  description: string | null;
+  config: Omit<CalculatorConfig, 'content'>;
+  content: CalculatorConfig['content'];
+  seo_title?: string;
+  seo_description?: string;
+  og_image_url?: string;
+  status: string;
+}
+
+// Server-side data fetching
+async function getCalculator(slug: string): Promise<CalculatorData | null> {
   const supabase = await createClient();
   const { data, error } = await supabase
     .from("calculators")
@@ -18,7 +30,7 @@ async function getCalculator(slug: string) {
     .single();
 
   if (error || !data) return null;
-  return data;
+  return data as unknown as CalculatorData;
 }
 
 // Dynamic metadata from DB
@@ -28,7 +40,7 @@ export async function generateMetadata({
   params: Promise<{ slug: string }>;
 }): Promise<Metadata> {
   const { slug } = await params;
-  const calc = (await getCalculator(slug)) as any;
+  const calc = await getCalculator(slug);
   if (!calc) return { title: "Calculator Not Found" };
 
   return {
@@ -48,11 +60,11 @@ export default async function DynamicCalculatorPage({
   params: Promise<{ slug: string }>;
 }) {
   const { slug } = await params;
-  const calc = (await getCalculator(slug)) as any;
+  const calc = await getCalculator(slug);
 
   if (!calc) notFound();
 
-  const content = (calc.content || {}) as any;
+  const content = calc.content || {};
 
   return (
     <CalculatorShell
@@ -70,7 +82,10 @@ export default async function DynamicCalculatorPage({
       )}
 
       {/* Full Interactive Experience (Client Side) */}
-      <DynamicCalculator config={{ ...calc.config, content: calc.content }} />
+      <DynamicCalculator 
+        calculatorId={calc.slug}
+        config={({ ...calc.config, content: calc.content } as unknown as CalculatorConfig)} 
+      />
     </CalculatorShell>
   );
 }

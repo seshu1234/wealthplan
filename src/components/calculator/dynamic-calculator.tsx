@@ -26,8 +26,11 @@ import {
   AccordionItem,
   AccordionTrigger,
 } from "@/components/ui/accordion"
+import { Button } from '@/components/ui/button'
+import { Brain, Loader2 } from 'lucide-react'
 
 interface DynamicCalculatorProps {
+  calculatorId: string
   config: CalculatorConfig
 }
 
@@ -80,7 +83,7 @@ function ChartTooltip({ active, payload, label }: ChartTooltipProps) {
   )
 }
 
-export function DynamicCalculator({ config }: DynamicCalculatorProps) {
+export function DynamicCalculator({ calculatorId, config }: DynamicCalculatorProps) {
   const { resolvedTheme } = useTheme()
   const themeColors = resolvedTheme === 'dark' ? CHART_COLORS_DARK : CHART_COLORS
   const colorList = [themeColors.primary, themeColors.secondary, themeColors.tertiary, themeColors.negative]
@@ -93,6 +96,9 @@ export function DynamicCalculator({ config }: DynamicCalculatorProps) {
     return initial
   })
 
+  const [aiInsight, setAiInsight] = useState<string>('')
+  const [isAnalyzing, setIsAnalyzing] = useState(false)
+
   // Sync state if config changes (avoiding useEffect for synchronous updates)
   const [prevConfig, setPrevConfig] = useState(config)
   if (config !== prevConfig) {
@@ -102,11 +108,47 @@ export function DynamicCalculator({ config }: DynamicCalculatorProps) {
       initial[input.id] = input.defaultValue ?? 0
     })
     setValues(initial)
+    setAiInsight('')
   }
 
   const results = useMemo(() => {
     return executeCalculation(config, values)
   }, [config, values])
+
+  const handleAiRealityCheck = async () => {
+    setIsAnalyzing(true)
+    setAiInsight('')
+    
+    try {
+      const response = await fetch('/api/ai/interpret', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          calculatorId: calculatorId,
+          inputs: values,
+          results: results.outputs,
+        }),
+      })
+
+      if (!response.ok) throw new Error('AI analysis failed')
+
+      const reader = response.body?.getReader()
+      const utf8Decoder = new TextDecoder()
+      if (reader) {
+        while (true) {
+          const { done, value } = await reader.read()
+          if (done) break
+          const chunk = utf8Decoder.decode(value, { stream: true })
+          setAiInsight(prev => prev + chunk)
+        }
+      }
+    } catch (error) {
+      console.error('AI Reality Check Error:', error)
+      setAiInsight('Unable to generate insight right now. Please try again later.')
+    } finally {
+      setIsAnalyzing(false)
+    }
+  }
 
   const formatValue = (val: number | string | undefined, format: 'currency' | 'percent' | 'number', textOnly = false) => {
     if (val === undefined || val === null) return '—'
@@ -223,6 +265,45 @@ export function DynamicCalculator({ config }: DynamicCalculatorProps) {
                   </p>
                 </div>
               ))}
+            </div>
+
+            {/* AI Reality Check Trigger */}
+            <div className="pt-4 border-t border-dashed">
+              {!aiInsight && !isAnalyzing ? (
+                <Button 
+                  onClick={handleAiRealityCheck} 
+                  variant="outline" 
+                  className="w-full gap-2 border-primary/20 hover:bg-primary/5 text-primary font-bold transition-all group"
+                >
+                  <Brain className="size-4 group-hover:scale-110 transition-transform" />
+                  Run AI Reality Check
+                </Button>
+              ) : (
+                <div className="rounded-2xl bg-primary/5 border border-primary/10 p-6 space-y-4 relative overflow-hidden">
+                  <div className="absolute top-0 right-0 p-3 opacity-10">
+                    <Brain size={48} className="text-primary" />
+                  </div>
+                  <div className="flex items-center gap-2 text-xs font-bold text-primary uppercase tracking-widest">
+                    {isAnalyzing ? (
+                      <Loader2 className="size-3 animate-spin" />
+                    ) : (
+                      <Brain className="size-3" />
+                    )}
+                    AI Insight
+                  </div>
+                  <p className="text-sm leading-relaxed text-foreground font-medium selection:bg-primary/20">
+                    {aiInsight || 'Architecting your financial analysis...'}
+                  </p>
+                  {!isAnalyzing && (
+                    <button 
+                      onClick={handleAiRealityCheck}
+                      className="text-[10px] font-bold text-primary/60 hover:text-primary underline uppercase tracking-widest"
+                    >
+                      Regenerate Analysis
+                    </button>
+                  )}
+                </div>
+              )}
             </div>
 
             {/* Insight Title/Body */}

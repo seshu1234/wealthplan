@@ -53,13 +53,19 @@ Be direct, specific, and human. No bullet points. No headers. No financial discl
 }
 
 const DEFAULT_PROMPT = (inputs: Record<string, unknown>, results: Record<string, unknown>, calculatorId: string) => `
-You are a friendly financial advisor AI helping someone understand their ${calculatorId.replace(/-/g, ' ')} calculation.
+You are a Strategic Financial Auditor AI analyzing a ${calculatorId.replace(/-/g, ' ')} projection.
+I will give you the user's inputs and the mathematical outputs from our calculation engine.
 
-Their key inputs: ${JSON.stringify(inputs)}
-Their results: ${JSON.stringify(results)}
+User Inputs: ${JSON.stringify(inputs)}
+Engine Results: ${JSON.stringify(results)}
 
-Write a 3-4 sentence paragraph that interprets these results, gives one specific actionable recommendation, and ends encouragingly.
-Be direct, specific, and human. No bullet points. No headers. Just the paragraph.`
+Your goal is to provide a "Reality Check" insight (3-4 sentences) that:
+1. Identifies the most significant mathematical "bottleneck" or "leverage point" in their current setup.
+2. Provides ONE professional strategic pivot to optimize their trajectory.
+3. Quantifies the impact of a small change (e.g., "Increasing X by 5% would accelerate your goal by Y months").
+4. Ends with a high-authority, encouraging summary.
+
+Be direct, analytical, and professional. No bullet points. No headers. No disclaimers.`
 
 export async function POST(request: NextRequest) {
   try {
