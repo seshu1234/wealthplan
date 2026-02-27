@@ -10,6 +10,8 @@ interface WhatIfSidekickProps {
   calculatorId: string
   inputs: Record<string, unknown>
   results: Record<string, unknown>
+  isInflationAdjusted?: boolean
+  inflationRate?: number
 }
 
 const SUGGESTIONS = [
@@ -19,7 +21,7 @@ const SUGGESTIONS = [
   "Is this realistic?"
 ]
 
-export function WhatIfSidekick({ calculatorId, inputs, results }: WhatIfSidekickProps) {
+export function WhatIfSidekick({ calculatorId, inputs, results, isInflationAdjusted, inflationRate }: WhatIfSidekickProps) {
   const [question, setQuestion] = useState('')
   const [answer, setAnswer] = useState('')
   const [isAnalyzing, setIsAnalyzing] = useState(false)
@@ -39,7 +41,9 @@ export function WhatIfSidekick({ calculatorId, inputs, results }: WhatIfSidekick
           question: currentQuestion,
           calculatorId,
           inputs,
-          results
+          results,
+          isInflationAdjusted,
+          inflationRate
         })
       })
 

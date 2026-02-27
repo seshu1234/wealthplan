@@ -33,8 +33,9 @@ export function PlaybookWizard({ scenario }: PlaybookWizardProps) {
         .single()
 
       if (!error && data) {
-        const rawConfig = data.config as Record<string, unknown>
-        setConfig({ ...rawConfig, content: data.content } as unknown as CalculatorConfig)
+        const raw = data as Record<string, unknown>
+        const rawConfig = (raw.config || {}) as Record<string, unknown>
+        setConfig({ ...rawConfig, content: raw.content as Record<string, unknown> } as unknown as CalculatorConfig)
       }
       setLoading(false)
     }

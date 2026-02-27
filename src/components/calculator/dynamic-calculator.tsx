@@ -26,6 +26,7 @@ import {
   AccordionItem,
   AccordionTrigger,
 } from "@/components/ui/accordion"
+import { Switch } from '@/components/ui/switch'
 import { Button } from '@/components/ui/button'
 import { Brain, Loader2, AlertTriangle } from 'lucide-react'
 import { HistoricalContext } from './historical-context'
@@ -105,8 +106,20 @@ export function DynamicCalculator({ calculatorId, config }: DynamicCalculatorPro
 
   // Identify time horizon (years) from inputs or defaults
   const years = useMemo(() => {
-    return Number(values.years || values.time || values.duration || values.term || 0)
-  }, [values])
+    // 1. Try common IDs
+    const duration = Number(values.years || values.time || values.duration || values.term || 0)
+    if (duration > 0) return duration
+
+    // 2. Try looking for 'year' or 'period' in input labels
+    const durationInput = config.inputs?.find(i => 
+      i.label.toLowerCase().includes('year') || 
+      i.label.toLowerCase().includes('period') ||
+      i.label.toLowerCase().includes('time')
+    )
+    if (durationInput) return Number(values[durationInput.id] || 0)
+
+    return 0
+  }, [values, config.inputs])
 
   // Sync state if config changes
   const [prevConfig, setPrevConfig] = useState(config)
@@ -120,9 +133,69 @@ export function DynamicCalculator({ calculatorId, config }: DynamicCalculatorPro
     setAiInsight('')
   }
 
-  const results = useMemo(() => {
-    return executeCalculation(config, values)
-  }, [config, values])
+  const { results, rawResults } = useMemo(() => {
+    const raw = executeCalculation(config, values)
+    if (!showInflation || years <= 0) return { results: raw, rawResults: raw }
+
+    // Adjust outputs for display
+    const adjustedOutputs = { ...raw.outputs }
+    config.outputs?.forEach(output => {
+      if (output.format === 'currency') {
+        const val = Number(adjustedOutputs[output.id])
+        if (!isNaN(val)) {
+          adjustedOutputs[output.id] = val / Math.pow(1 + inflationRate / 100, years)
+        }
+      }
+    })
+
+    // Adjust charts point-by-point
+    const adjustedCharts = { ...raw.charts }
+    if (config.charts) {
+      config.charts.forEach(chart => {
+        const data = adjustedCharts[chart.id]
+        if (!data) return
+        
+        const loopKey = chart.loopKey || 'years'
+        adjustedCharts[chart.id] = data.map(point => {
+          const i = Number(point[loopKey])
+          if (isNaN(i)) return point
+          
+          const newPoint = { ...point }
+          const discountFactor = Math.pow(1 + inflationRate / 100, i)
+          
+          chart.series.forEach(s => {
+            const val = Number(newPoint[s.dataKey])
+            if (!isNaN(val)) {
+              newPoint[s.dataKey] = Math.round(val / discountFactor)
+            }
+          })
+          return newPoint
+        })
+      })
+    }
+
+    return { 
+      results: { outputs: adjustedOutputs, charts: adjustedCharts }, 
+      rawResults: raw 
+    }
+  }, [config, values, showInflation, inflationRate, years])
+
+  // Identify the "Primary" future value for insights
+  const primaryFutureValue = useMemo(() => {
+    const id = results.outputs.total_value ? 'total_value' : 
+               results.outputs.finalBalance ? 'finalBalance' : 
+               results.outputs.balance ? 'balance' : 
+               config.outputs?.[0]?.id || ''
+    return Number(results.outputs[id] || 0)
+  }, [results, config.outputs])
+
+  const primaryRawValue = useMemo(() => {
+    const id = rawResults.outputs.total_value ? 'total_value' : 
+               rawResults.outputs.finalBalance ? 'finalBalance' : 
+               rawResults.outputs.balance ? 'balance' : 
+               config.outputs?.[0]?.id || ''
+    return Number(rawResults.outputs[id] || 0)
+  }, [rawResults, config.outputs])
 
   const handleAiRealityCheck = async () => {
     setIsAnalyzing(true)
@@ -223,23 +296,25 @@ export function DynamicCalculator({ calculatorId, config }: DynamicCalculatorPro
 
   // AI Scenario Narrator (One-liner helper)
   const scenarioNarrative = useMemo(() => {
-    if (results.outputs.finalBalance) {
-      const balance = Number(results.outputs.finalBalance)
-      if (balance > 1000000) return "You're on track to join the Millionaire's Club at this pace. 🏆"
-      if (balance > 500000) return "Solid trajectory. You're building substantial legacy wealth. 🏛️"
+    if (primaryFutureValue > 0) {
+      const balance = primaryFutureValue
+      const formatted = balance >= 1000000 
+        ? `$${(balance / 1000000).toFixed(1)}M` 
+        : `$${Math.round(balance / 1000).toLocaleString()}K`
+      
+      if (balance > 1000000) return `You're on track for a ${formatted} real-value legacy. 🏆`
+      if (balance > 500000) return `Solid trajectory. Building ${formatted} in adjusted wealth. 🏛️`
     }
     return "Optimizing your financial path based on real-time inputs. 📈"
-  }, [results.outputs])
+  }, [primaryFutureValue])
 
   const formatValue = (val: number | string | undefined, format: 'currency' | 'percent' | 'number', textOnly = false) => {
     if (val === undefined || val === null) return '—'
-    let num = Number(val)
+    const num = Number(val)
     if (isNaN(num)) return '—'
 
-    // Apply Inflation Adjustment if it's currency and toggle is on
-    if (showInflation && format === 'currency' && years > 0) {
-      num = num / Math.pow(1 + inflationRate / 100, years)
-    }
+    // Apply Inflation Adjustment logic removed from here as it is now pre-applied in the results memo
+    // to ensure consistency between charts, results, and narrative.
     
     if (textOnly) {
       if (format === 'currency') return `$${num.toLocaleString('en-US', { maximumFractionDigits: 0 })}`
@@ -350,20 +425,19 @@ export function DynamicCalculator({ calculatorId, config }: DynamicCalculatorPro
 
               {/* Inflation Toggle (Brutal Honesty Mode) */}
               {years > 0 && (
-                <div className="flex items-center gap-2 bg-primary/5 px-3 py-1.5 rounded-full border border-primary/10 transition-all hover:bg-primary/10">
-                  <div className="relative inline-flex h-4 w-7 shrink-0 cursor-pointer items-center rounded-full transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background disabled:cursor-not-allowed disabled:opacity-50">
-                    <input 
-                      type="checkbox" 
-                      className="peer sr-only" 
-                      checked={showInflation} 
-                      onChange={() => setShowInflation(!showInflation)} 
-                    />
-                    <div className={`pointer-events-none block h-3 w-3 rounded-full bg-background shadow-lg ring-0 transition-transform ${showInflation ? "translate-x-3.5 bg-primary" : "translate-x-0.5"}`} />
-                    <div className={`absolute inset-0 rounded-full transition-colors ${showInflation ? "bg-primary/40" : "bg-muted-foreground/30"}`} />
-                  </div>
-                  <span className={`text-[10px] font-black uppercase tracking-tighter ${showInflation ? "text-primary" : "text-muted-foreground"}`}>
+                <div className="flex items-center gap-3 bg-primary/5 px-4 py-2 rounded-full border border-primary/20 transition-all hover:bg-primary/10">
+                  <Switch 
+                    id="inflation-toggle"
+                    checked={showInflation}
+                    onCheckedChange={setShowInflation}
+                    className="data-[state=checked]:bg-primary"
+                  />
+                  <Label 
+                    htmlFor="inflation-toggle" 
+                    className={`text-[10px] font-black uppercase tracking-tighter cursor-pointer ${showInflation ? "text-primary" : "text-muted-foreground"}`}
+                  >
                     Brutal Honesty
-                  </span>
+                  </Label>
                 </div>
               )}
 
@@ -399,12 +473,12 @@ export function DynamicCalculator({ calculatorId, config }: DynamicCalculatorPro
                     />
                   </div>
                   <div className="text-[10px] text-muted-foreground leading-relaxed sm:max-w-[200px]">
-                    Historically, inflation averages **3.1%**. Using **0%** (Nominal) masks the reality of future purchasing power.
+                    Historically, inflation averages <strong className="text-foreground">3.1%</strong>. Using <strong className="text-foreground">{inflationRate}%</strong> {inflationRate === 0 ? '(Nominal)' : 'adjustment'} masks the reality of future purchasing power.
                   </div>
                 </div>
                 
                 <HistoricalContext 
-                  futureValue={Number(results.outputs.finalBalance || 0)} 
+                  futureValue={primaryRawValue} 
                   years={years}
                   inflationRate={inflationRate}
                 />
@@ -414,12 +488,24 @@ export function DynamicCalculator({ calculatorId, config }: DynamicCalculatorPro
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               {config.outputs?.map((output) => (
                 <div key={output.id} className="p-4 rounded-lg border bg-muted/20 space-y-1">
-                  <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest">
-                    {output.label}
-                  </p>
-                  <p className={`text-2xl font-bold tabular-nums ${variantClasses[output.variant || 'neutral']}`}>
-                    {formatValue(results.outputs[output.id], output.format)}
-                  </p>
+                  <div className="flex justify-between items-start">
+                    <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest">
+                      {output.label}
+                      {showInflation && output.format === 'currency' && (
+                        <span className="ml-1 text-primary"> (Real)</span>
+                      )}
+                    </p>
+                  </div>
+                  <div className="space-y-1">
+                    <p className={`text-2xl font-bold tabular-nums ${variantClasses[output.variant || 'neutral']}`}>
+                      {formatValue(results.outputs[output.id], output.format)}
+                    </p>
+                    {showInflation && output.format === 'currency' && (
+                      <p className="text-[10px] font-medium text-muted-foreground/60 line-through">
+                        Nominal: {formatValue(rawResults.outputs[output.id], 'currency', true)}
+                      </p>
+                    )}
+                  </div>
                 </div>
               ))}
             </div>
@@ -495,6 +581,8 @@ export function DynamicCalculator({ calculatorId, config }: DynamicCalculatorPro
               calculatorId={calculatorId}
               inputs={values}
               results={results.outputs}
+              isInflationAdjusted={showInflation}
+              inflationRate={inflationRate}
             />
 
             {/* Insight Title/Body */}

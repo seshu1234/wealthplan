@@ -24,27 +24,29 @@ const getAIClient = () => {
   return null
 }
 
-const SIDEKICK_PROMPT = (question: string, inputs: Record<string, unknown>, results: Record<string, unknown>, calculatorId: string) => `
+const SIDEKICK_PROMPT = (question: string, inputs: Record<string, unknown>, results: Record<string, unknown>, calculatorId: string, isAdjusted: boolean, rate: number) => `
 You are a "What-If" Financial Sidekick for the ${calculatorId.replace(/-/g, ' ')} calculator.
 A user has a specific question about their financial strategy.
 
 Current User Parameters: ${JSON.stringify(inputs)}
 Current Engine Results: ${JSON.stringify(results)}
+Inflation Mode: ${isAdjusted ? `ACTIVE (${rate}% purchasing power adjustment applied to results)` : `INACTIVE (Results are NOMINAL values)`}
 
 The User's "What-If" Question: "${question}"
 
 Your Goal:
 Provide a pithy, analytical, and authoritative answer (2-3 sentences max).
 1. Bridge the gap between the user's natural question and the mathematical reality.
-2. If possible, quantify the trade-off (e.g., "Waiting 2 years would cost you $X in missed compounding but reduce debt by $Y").
-3. Give a clear "Greentick Advice" (Do it / Don't do it / Here's the risk).
+2. If the user is in Inflation Mode, acknowledge that these numbers represent "Real" purchasing power.
+3. If they are NOT in Inflation Mode, warn them briefly if their long-term project ($X) will be eroded by inflation.
+4. Give a clear "Greentick Advice" (Do it / Don't do it / Here's the risk).
 
 Tone: Brutally honest, strategic, and encouraging. No bullet points. No headers. No disclaimers. PURE NARRATIVE.
 `
 
 export async function POST(request: NextRequest) {
   try {
-    const { question, calculatorId, inputs, results } = await request.json()
+    const { question, calculatorId, inputs, results, isInflationAdjusted, inflationRate } = await request.json()
 
     if (!question) {
       return new Response('Please ask a question.', { status: 400 })
@@ -59,7 +61,7 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    const prompt = SIDEKICK_PROMPT(question, inputs, results, calculatorId)
+    const prompt = SIDEKICK_PROMPT(question, inputs, results, calculatorId, isInflationAdjusted, inflationRate)
 
     const stream = await ai.client.chat.completions.create({
       model: ai.model,
