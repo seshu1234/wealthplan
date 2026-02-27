@@ -78,6 +78,13 @@ export function CalculatorShell({
         </motion.section>
 
         {children}
+
+        {/* Results Level Educational Disclaimer */}
+        <div className="p-4 rounded-xl bg-muted/20 border border-border/40 text-[10px] italic text-muted-foreground/70 leading-relaxed text-center">
+          <p>
+            <strong>Note on Simulations:</strong> These results are generated via automated financial logic for educational purposes only. WealthPath projections do not constitute investment advice. Consult a professional advisor for significant financial decisions.
+          </p>
+        </div>
       </div>
 
       {/* AdSense — Mid calculator (between calculator and FAQ) */}

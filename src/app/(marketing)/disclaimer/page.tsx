@@ -1,7 +1,6 @@
 import Link from "next/link";
 import { 
   ArrowLeft, 
-  AlertTriangle, 
   Scale, 
   DollarSign,
   Shield,
@@ -82,26 +81,26 @@ export default function DisclaimerPage() {
         {/* Header */}
         <div className="mb-12">
           <div className="flex items-center gap-4 mb-6">
-            <div className="p-3 rounded-xl bg-gradient-to-br from-amber-500/20 to-amber-500/5">
-              <AlertTriangle className="h-8 w-8 text-amber-600" />
+            <div className="p-3 rounded-xl bg-primary/10">
+              <Scale className="h-8 w-8 text-primary" />
             </div>
             <div>
-              <h1 className="text-5xl font-bold tracking-tight bg-gradient-to-r from-amber-600 via-amber-500 to-amber-600 bg-clip-text text-transparent">
-                Important Disclaimers
+              <h1 className="text-5xl font-black tracking-tight uppercase leading-none">
+                Educational <span className="text-primary italic">Guardrails</span>
               </h1>
-              <p className="text-muted-foreground mt-2 text-lg">
-                Please read this important notice before using our financial tools
+              <p className="text-muted-foreground mt-2 text-lg italic font-medium">
+                Technology for agency, not financial advisory.
               </p>
             </div>
           </div>
           
-          <Alert variant="destructive" className="bg-amber-50 dark:bg-amber-950 border-amber-500">
-            <AlertTriangle className="h-4 w-4 text-amber-600" />
-            <AlertTitle className="text-amber-800 dark:text-amber-300 font-semibold">
-              Not Financial Advice
+          <Alert className="bg-muted/50 border-primary/20 rounded-2xl p-6">
+            <Info className="h-5 w-5 text-primary" />
+            <AlertTitle className="text-primary font-black uppercase tracking-widest text-xs mb-1">
+              Mission Statement: Educational Technology
             </AlertTitle>
-            <AlertDescription className="text-amber-700 dark:text-amber-400">
-              All tools on WealthPlan are for educational purposes only. They do not constitute financial, tax, or investment advice.
+            <AlertDescription className="text-muted-foreground text-sm italic leading-relaxed">
+              WealthPath is a pure-play technology platform. Our mission is to democratize financial literacy by providing high-precision tools and simulations. We are <strong>not</strong> a regulated financial advisory, we do <strong>not</strong> provide personalized investment advice, and we do <strong>not</strong> act as a fiduciary.
             </AlertDescription>
           </Alert>
         </div>
@@ -138,9 +137,9 @@ export default function DisclaimerPage() {
                   <DollarSign className="h-6 w-6 text-red-600" />
                 </div>
                 <div>
-                  <CardTitle className="text-2xl mb-2">Financial Disclaimer</CardTitle>
-                  <CardDescription className="text-base">
-                    Understanding the limitations of our calculators
+                  <CardTitle className="text-2xl mb-2 italic uppercase font-black">Educational Mission</CardTitle>
+                  <CardDescription className="text-base italic">
+                    Technology built for human agency
                   </CardDescription>
                 </div>
               </div>

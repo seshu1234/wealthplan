@@ -3,19 +3,19 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 
 const features = [
   {
-    icon: <ShieldCheck className="h-8 w-8 text-[hsl(var(--accent-brand))]" />,
-    title: "Precision You Can Trust",
-    description: "Built for the US reality. IRS-ready math (401k, IRA, HSA) ensures your roadmap is grounded in actual tax laws, not generic guesses.",
+    icon: <ShieldCheck className="h-8 w-8 text-primary" />,
+    title: "Intelligence for Agency",
+    description: "Built to educate, not advise. Our IRS-aware math helps you understand the 'Why' behind every scenario, empowering you to make informed independent choices.",
   },
   {
-    icon: <TrendingUp className="h-8 w-8 text-[hsl(var(--accent-brand))]" />,
-    title: "Your Data, Your Future",
-    description: "Complete financial privacy. All calculations happen locally on your device—no accounts, no trackers, and zero risk to your data.",
+    icon: <TrendingUp className="h-8 w-8 text-primary" />,
+    title: "100% Data Sovereignty",
+    description: "Privacy by design. Every calculation happens locally on your device. No accounts, no data sales—your financial simulations belong to you and you alone.",
   },
   {
-    icon: <BookOpen className="h-8 w-8 text-[hsl(var(--accent-brand))]" />,
-    title: "Actionable Intelligence",
-    description: "Beyond just numbers. Every tool delivers a strategic 'Why' and step-by-step guidance on how to optimize your outcome immediately.",
+    icon: <BookOpen className="h-8 w-8 text-primary" />,
+    title: "Precision Education",
+    description: "Beyond basic tools. We provide the technical infrastructure to simulate real-world impacts of inflation, taxes, and debt on your long-term legacy.",
   },
 ];
 

@@ -1,4 +1,5 @@
 import { Hero } from "@/components/home/hero";
+import { AdvantageSection } from "@/components/home/advantage-section";
 import { FeaturesSection } from "@/components/home/features-section";
 import { HowItWorks } from "@/components/home/how-it-works";
 import { TrustSection } from "@/components/home/trust-section";
@@ -12,6 +13,7 @@ export default function Home() {
   return (
     <div className="flex flex-col min-h-[calc(100vh-4rem)]">
       <Hero />
+      <AdvantageSection />
       <FeaturesSection />
       <HowItWorks />
       <TrustSection />
