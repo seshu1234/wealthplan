@@ -19,7 +19,7 @@ import {
 import { useTheme } from 'next-themes'
 import { CHART_COLORS, CHART_COLORS_DARK } from '@/lib/chart-colors'
 import { ChevronDown, Sparkles, Quote } from 'lucide-react'
-import { motion, AnimatePresence } from 'framer-motion'
+import { motion } from 'framer-motion'
 import {
   Accordion,
   AccordionContent,
@@ -108,10 +108,17 @@ export function DynamicCalculator({ config }: DynamicCalculatorProps) {
     return executeCalculation(config, values)
   }, [config, values])
 
-  const formatValue = (val: number | string | undefined, format: 'currency' | 'percent' | 'number') => {
+  const formatValue = (val: number | string | undefined, format: 'currency' | 'percent' | 'number', textOnly = false) => {
     if (val === undefined || val === null) return '—'
     const num = Number(val)
     if (isNaN(num)) return '—'
+    
+    if (textOnly) {
+      if (format === 'currency') return `$${num.toLocaleString('en-US', { maximumFractionDigits: 0 })}`
+      if (format === 'percent') return `${num}%`
+      return num.toLocaleString()
+    }
+
     if (format === 'currency') return <span>$<AnimatedNumber value={num} /></span>
     if (format === 'percent') return <span><AnimatedNumber value={num} />%</span>
     return <AnimatedNumber value={num} />
@@ -128,12 +135,12 @@ export function DynamicCalculator({ config }: DynamicCalculatorProps) {
       // Find output config for formatting if it exists
       const outputConfig = config.outputs?.find(o => o.id === id)
       const formatted = outputConfig 
-        ? formatValue(val, outputConfig.format)
+        ? formatValue(val, outputConfig.format, true)
         : (typeof val === 'number' ? val.toLocaleString() : String(val))
       
       // Use case-insensitive and space-flexible regex
       const regex = new RegExp(`\\{\\{\\s*${id}\\s*\\}\\}`, 'gi')
-      bridged = bridged.replace(regex, formatted)
+      bridged = bridged.replace(regex, formatted as string)
     })
 
     return bridged
@@ -348,12 +355,12 @@ export function DynamicCalculator({ config }: DynamicCalculatorProps) {
             className="p-8 sm:p-10 rounded-[2.5rem] bg-primary text-primary-foreground shadow-2xl relative overflow-hidden group"
           >
             {/* Background design elements */}
-            <div className="absolute top-0 right-0 w-64 h-64 bg-white/5 rounded-full -mr-20 -mt-20 blur-3xl group-hover:bg-white/10 transition-colors duration-700" />
-            <div className="absolute bottom-0 left-0 w-48 h-48 bg-black/10 rounded-full -ml-16 -mb-16 blur-2xl" />
+            <div className="absolute top-0 right-0 w-64 h-64 bg-primary-foreground/5 rounded-full -mr-20 -mt-20 blur-3xl group-hover:bg-primary-foreground/10 transition-colors duration-700" />
+            <div className="absolute bottom-0 left-0 w-48 h-48 bg-primary-foreground/5 rounded-full -ml-16 -mb-16 blur-2xl" />
             
             <div className="relative z-10 flex flex-col md:flex-row gap-10 items-center">
               <div className="flex-1 space-y-6 text-center md:text-left">
-                <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/10 border border-white/20 text-[10px] font-bold uppercase tracking-wider">
+                <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-primary-foreground/10 border border-primary-foreground/20 text-[10px] font-bold uppercase tracking-wider">
                   <Sparkles size={12} />
                   <span>Executive Summary</span>
                 </div>
@@ -371,7 +378,7 @@ export function DynamicCalculator({ config }: DynamicCalculatorProps) {
                   { icon: "02", label: "Temporal Strategy", text: "Leveraging the exponential math of time." },
                   { icon: "03", label: "Risk Mitigation", text: "Ensuring structural integrity of your plan." }
                 ].map((pill, idx) => (
-                  <div key={idx} className="flex items-start gap-4 p-4 rounded-2xl bg-white/10 border border-white/10 backdrop-blur-sm min-w-[240px]">
+                  <div key={idx} className="flex items-start gap-4 p-4 rounded-2xl bg-primary-foreground/10 border border-primary-foreground/10 backdrop-blur-sm min-w-[240px]">
                     <span className="text-xl font-black opacity-30 tabular-nums">{pill.icon}</span>
                     <div>
                       <p className="text-sm font-bold tracking-tight">{pill.label}</p>

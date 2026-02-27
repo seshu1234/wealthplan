@@ -32,6 +32,7 @@ import {
   BookOpen,
   Info,
   Sparkles,
+  Map as MapIcon,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import React from "react";
@@ -110,7 +111,7 @@ const calculatorCategories = [
 
 const mainLinks = [
   { title: "Strategy", href: "/strategy", icon: Sparkles },
-  { title: "Roadmaps", href: "/roadmaps", icon: Map },
+  { title: "Roadmaps", href: "/roadmaps", icon: MapIcon },
   { title: "State Taxes", href: "/taxes/state-matrix", icon: Landmark },
   { title: "Guides", href: "/guides", icon: BookOpen },
   { title: "Blog", href: "/blog", icon: BookOpen },
@@ -132,7 +133,7 @@ export function Navbar() {
           className="flex items-center gap-2.5 shrink-0 group"
         >
           <div className="h-8 w-8 rounded-lg bg-primary flex items-center justify-center shrink-0">
-            <Calculator className="h-4 w-4 text-primary-foreground" />
+            <Calculator className="size-4 text-primary-foreground" />
           </div>
           <span className="font-bold text-base tracking-tight text-foreground">
             WealthPath
@@ -225,9 +226,9 @@ export function Navbar() {
           </div>
 
           {/* CTA — desktop */}
-          <Button size="sm" className="hidden md:flex gap-1.5 font-semibold" asChild>
+          <Button variant="cta" size="sm" className="hidden md:flex gap-1.5 font-semibold" asChild>
             <Link href="/plan">
-              <Sparkles className="h-3.5 w-3.5" />
+              <Sparkles className="size-3.5" />
               AI Plan
             </Link>
           </Button>
@@ -307,7 +308,7 @@ function MobileSheet({ pathname }: { pathname: string }) {
             <div className="h-7 w-7 rounded-md bg-primary flex items-center justify-center">
               <Calculator className="h-3.5 w-3.5 text-primary-foreground" />
             </div>
-            <span className="font-bold tracking-tight text-black">WealthPath</span>
+            <span className="font-bold tracking-tight text-foreground">WealthPath</span>
           </SheetTitle>
         </SheetHeader>
 

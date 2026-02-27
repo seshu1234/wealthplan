@@ -1,11 +1,11 @@
 'use client'
 
 import { ReactNode } from "react";
-import { motion } from "framer-motion";
 import { TrendingUp } from "lucide-react";
 import { AdSenseSlot } from "@/components/calculator/adsense-slot";
 import { AffiliateCTA } from "@/components/calculator/affiliate-cta";
 import { PrintButton } from "@/components/calculator/print-button";
+import { Card } from "@/components/ui/card";
 
 interface CalculatorShellProps {
   title: string;
@@ -31,60 +31,48 @@ export function CalculatorShell({
 }: CalculatorShellProps) {
   return (
     <div className="relative min-h-screen overflow-hidden">
-      {/* Premium Background Texture */}
-      <div className="absolute inset-0 -z-10 pointer-events-none opacity-40 dark:opacity-20">
-        <div className="absolute top-0 -left-4 w-72 h-72 bg-primary/10 rounded-full blur-[120px] animate-pulse" />
-        <div className="absolute bottom-40 -right-4 w-96 h-96 bg-primary/5 rounded-full blur-[140px] animate-pulse delay-700" />
-        <div className="absolute inset-0 bg-[radial-gradient(#e5e7eb_1px,transparent_1px)] dark:bg-[radial-gradient(#1f2937_1px,transparent_1px)] [background-size:24px_24px] [mask-image:radial-gradient(ellipse_50%_50%_at_50%_50%,#000_70%,transparent_100%)]" />
+      {/* Background Texture — Subtle & Professional */}
+      <div className="absolute inset-0 -z-10 pointer-events-none opacity-20">
+        <div className="absolute top-0 -left-4 w-72 h-72 bg-primary/20 rounded-full blur-[100px]" />
+        <div className="absolute bottom-40 -right-4 w-96 h-96 bg-accent/10 rounded-full blur-[120px]" />
       </div>
 
       <div className="max-w-6xl mx-auto px-4 py-8 space-y-12 relative z-10">
-      {/* AdSense — Above fold (below header, above calculator) */}
+      {/* AdSense — Above fold */}
       <AdSenseSlot zone="above-fold" className="w-full" />
 
-      <motion.div 
-        initial={{ opacity: 0, y: -10 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.5 }}
-        className="flex flex-col sm:flex-row sm:items-end justify-between gap-4 pb-6 border-b"
-      >
+      <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4 pb-6 border-b">
         <div className="space-y-2">
-          <h1 className="text-3xl sm:text-4xl font-extrabold tracking-tight text-foreground">{title}</h1>
+          <h1 className="text-3xl sm:text-4xl font-bold tracking-tight text-foreground">{title}</h1>
           <p className="text-lg text-muted-foreground max-w-2xl leading-relaxed">{description}</p>
         </div>
         <div className="print:hidden">
           <PrintButton />
         </div>
-      </motion.div>
-
+      </div>
 
       <div className="space-y-12">
-        {/* Strategic Perspective Section - Answering "Why This Tool?" */}
-        <motion.section 
-          initial={{ opacity: 0, y: 10 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6, delay: 0.2 }}
-          className="p-6 rounded-2xl bg-muted/40 border border-border/50 flex flex-col md:flex-row gap-6 items-center"
-        >
-          <div className="w-12 h-12 rounded-xl bg-primary/10 flex items-center justify-center shrink-0">
-            <TrendingUp className="h-6 w-6 text-primary" />
+        {/* Strategic Perspective Section */}
+        <section className="p-6 rounded-xl bg-muted/40 border flex flex-col md:flex-row gap-6 items-center shadow-sm">
+          <div className="size-12 rounded-lg bg-accent/10 flex items-center justify-center shrink-0">
+            <TrendingUp className="size-6 text-accent" />
           </div>
-          <div className="space-y-1 text-center md:text-left">
-            <p className="text-[10px] font-black uppercase tracking-widest text-primary">Strategic Perspective</p>
+          <div className="space-y-1 text-center md:text-left flex-1">
+            <p className="text-[10px] font-bold uppercase tracking-wider text-accent">Strategic Perspective</p>
             <p className="text-sm font-medium leading-relaxed text-muted-foreground">
-              {description} Use this high-fidelity projection to move beyond generic guesses and lock in a roadmap built on US-accurate financial logic.
+              {description} This high-fidelity simulation moves beyond generic guesses to lock in a roadmap built on verified financial logic.
             </p>
           </div>
-        </motion.section>
+        </section>
 
         {children}
 
-        {/* Results Level Educational Disclaimer */}
-        <div className="p-4 rounded-xl bg-muted/20 border border-border/40 text-[10px] italic text-muted-foreground/70 leading-relaxed text-center">
+        {/* Results Level Notice */}
+        <Card className="p-4 bg-muted/20 border-border/40 text-[10px] italic text-muted-foreground/70 leading-relaxed text-center shadow-none">
           <p>
-            <strong>Note on Simulations:</strong> These results are generated via automated financial logic for educational purposes only. WealthPath projections do not constitute investment advice. Consult a professional advisor for significant financial decisions.
+            <strong>Note on Simulations:</strong> These results are generated via automated financial logic for educational purposes only. WealthPath projections do not constitute investment advice.
           </p>
-        </div>
+        </Card>
       </div>
 
       {/* AdSense — Mid calculator (between calculator and FAQ) */}

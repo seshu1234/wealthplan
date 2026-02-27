@@ -1,5 +1,4 @@
 import { ShieldCheck, TrendingUp, BookOpen } from "lucide-react";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 
 const features = [
   {
@@ -21,29 +20,29 @@ const features = [
 
 export function FeaturesSection() {
   return (
-    <section className="py-16 px-4 max-w-6xl mx-auto border-t border-border/40">
-      <div className="text-center mb-12">
-        <h2 className="text-3xl font-bold tracking-tight">Why Choose Wealthplan?</h2>
-        <p className="text-muted-foreground mt-4 max-w-2xl mx-auto">
-          Built specifically for the American tax system and financial landscape, our tools aim to provide the most accurate projections available online.
-        </p>
-      </div>
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-        {features.map((feature, idx) => (
-          <Card key={idx} className="bg-transparent border-none shadow-none text-center">
-            <CardHeader className="flex flex-col items-center space-y-4">
-              <div className="p-3 bg-muted rounded-full">
+    <section className="py-24 px-4 bg-background">
+      <div className="container max-w-6xl mx-auto space-y-12">
+        <div className="text-center space-y-4">
+          <h2 className="text-3xl font-bold tracking-tight">Why Choose Wealthplan?</h2>
+          <p className="text-muted-foreground max-w-2xl mx-auto text-lg leading-relaxed">
+            Built specifically for accuracy in the American financial landscape, our engines provide high-fidelity simulations for informed human agency.
+          </p>
+        </div>
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+          {features.map((feature, idx) => (
+            <div key={idx} className="p-8 rounded-xl border bg-muted/30 space-y-4 hover:bg-muted/50 transition-colors shadow-sm">
+              <div className="h-12 w-12 rounded-lg bg-accent/10 flex items-center justify-center text-accent">
                 {feature.icon}
               </div>
-              <CardTitle className="text-xl">{feature.title}</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <p className="text-muted-foreground leading-relaxed">
-                {feature.description}
-              </p>
-            </CardContent>
-          </Card>
-        ))}
+              <div className="space-y-2">
+                <h3 className="text-xl font-bold">{feature.title}</h3>
+                <p className="text-muted-foreground leading-relaxed text-sm italic font-medium">
+                  {feature.description}
+                </p>
+              </div>
+            </div>
+          ))}
+        </div>
       </div>
     </section>
   );
