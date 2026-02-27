@@ -14,6 +14,7 @@ export type CalculatorInput = {
   options?: { label: string; value: string }[];
   defaultValue: number | string;
   unit?: string;
+  tooltip?: string;
 };
 
 export type CalculatorOutput = {
@@ -22,6 +23,8 @@ export type CalculatorOutput = {
   formula?: string;
   format: 'currency' | 'percent' | 'number';
   variant?: 'positive' | 'negative' | 'neutral';
+  tooltip?: string;
+  ignoreInflation?: boolean;
 };
 
 export type CalculatorChart = {
@@ -34,7 +37,16 @@ export type CalculatorChart = {
     dataKey: string;
     formula: string;
     color?: string;
+    scenarioId?: string; // If set, only render this series when the scenario is active
+    stackId?: string; // Used to group series into a stacked area chart vs overlay
   }[];
+};
+
+export type CalculatorScenario = {
+  id: string;
+  label: string;
+  description?: string;
+  inputs?: CalculatorInput[]; // Additional inputs that configure this scenario when active
 };
 
 export type CalculatorConfig = {
@@ -46,6 +58,10 @@ export type CalculatorConfig = {
   };
   outputs: CalculatorOutput[];
   charts?: CalculatorChart[];
+  presets?: { id: string; label: string; values: Record<string, number | string> }[];
+  currency?: string; // e.g., 'USD', 'EUR', 'GBP', 'INR'
+  milestones?: { value: number; label: string; color?: string }[];
+  showPieChart?: boolean; // Toggles the Invested vs Return Pie Chart
   content?: {
     intro?: string;
     highlight?: string;
@@ -54,6 +70,18 @@ export type CalculatorConfig = {
     deepDive?: { title: string; body: string };
     keyNumbers?: { label: string; value: string; source: string }[];
     faq?: { question: string; answer: string }[];
+  };
+  scenarios?: CalculatorScenario[]; // Scenario toggles for Step-Up, Lump Sum, etc.
+  whatIf?: {
+    goalSeeker?: { targetOutputId: string; adjustableInputId: string };
+    crashSimulator?: boolean; // Injects crash_year and crash_percent into context
+    taxImpact?: boolean;      // Injects tax_rate into context
+  };
+  healthIntegration?: {
+    showWealthPathScore?: boolean;
+    diversificationWarning?: boolean;
+    emergencyFundCheck?: { monthlyExpensesInputId: string };
+    debtToIncomeCheck?: { monthlyDebtInputId: string; monthlyIncomeInputId: string };
   };
 };
 
@@ -76,24 +104,70 @@ export function executeCalculation(
   if (!config.outputs) return { outputs, charts };
 
   // context starting with inputs, ensuring ALL config inputs are present even if missing from 'values'
-  const currentContext: Record<string, number | string> = { ...values };
+  const currentContext: Record<string, number | string | boolean> = { ...values };
+  
+  // 0. Pre-populate all relevant IDs with 0 to prevent ReferenceErrors in formulas
   config.inputs?.forEach(input => {
     if (currentContext[input.id] === undefined) {
       currentContext[input.id] = input.defaultValue ?? 0;
     }
   });
+  config.outputs?.forEach(output => {
+    if (currentContext[output.id] === undefined) {
+      currentContext[output.id] = 0;
+    }
+  });
+  config.scenarios?.forEach(scen => {
+    const scenarioKey = `scenario_${scen.id}`;
+    if (currentContext[scenarioKey] === undefined) {
+      currentContext[scenarioKey] = 0; // Default to inactive
+    }
+    scen.inputs?.forEach(input => {
+      if (currentContext[input.id] === undefined) {
+        currentContext[input.id] = input.defaultValue ?? 0;
+      }
+    });
+  });
+
+  // Inject scenario inputs into context
+  config.scenarios?.forEach(scen => {
+    const isActive = !!currentContext[`scenario_${scen.id}`];
+    scen.inputs?.forEach(input => {
+      if (isActive) {
+        if (currentContext[input.id] === undefined) {
+          currentContext[input.id] = input.defaultValue ?? 0;
+        }
+      } else {
+        // If inactive, force to 0 so formulas don't crash
+        currentContext[input.id] = 0;
+      }
+    });
+  });
 
   // 1. Calculate Outputs
   if (logic.type === 'formula') {
     for (const output of config.outputs) {
-      const formula = output.formula || logic.formula;
+      const formula = (output.formula || logic.formula)?.trim();
       if (!formula) continue;
 
       try {
-        const vars = Object.keys(currentContext);
-        const args = vars.map(v => currentContext[v]);
-        const fn = new Function(...vars, `return ${formula}`);
-        const result = fn(...args);
+        const validVars = Object.keys(currentContext).filter(v => /^[a-zA-Z_$][0-9a-zA-Z_$]*$/.test(v));
+        // Create a function that takes 'ctx' and returns the formula result.
+        // We destructure only valid variables into the local scope.
+        const fnBody = `
+          try {
+            const { ${validVars.join(', ')} } = ctx;
+            return Number(${formula});
+          } catch (e) {
+            return 0;
+          }
+        `;
+        const fn = new Function('ctx', fnBody);
+        const result = fn(currentContext);
+        
+        if (result === undefined || isNaN(result as number)) {
+          console.warn(`[Engine] Formula result is NaN or undefined for [${output.id}]:`, { result, formula, contextKeys: validVars });
+        }
         
         const finalVal = typeof result === 'number' && isFinite(result) ? result : 0;
         outputs[output.id] = finalVal;
@@ -119,17 +193,30 @@ export function executeCalculation(
       const data: Record<string, number | string>[] = [];
       for (let i = 1; i <= loopMax; i++) {
         const point: Record<string, number | string> = { [chart.loopKey]: i };
+        const ctx = { ...currentContext, i };
+        const validVars = Object.keys(ctx).filter(v => /^[a-zA-Z_$][0-9a-zA-Z_$]*$/.test(v));
         
-        // Context for formula: original inputs + sequential results + 'i'
-        const loopVars = [...Object.keys(currentContext), 'i'];
-        const loopArgs = [...Object.values(currentContext), i];
         
         for (const s of chart.series) {
           try {
-            const fn = new Function(...loopVars, `return ${s.formula}`);
-            const result = fn(...loopArgs);
+            const formula = s.formula?.trim();
+            if (!formula) continue;
+
+            // Reuse validVars from parent loop scope
+            const fnBody = `
+              try {
+                const { ${validVars.join(', ')} } = ctx;
+                return Number(${formula});
+              } catch (e) {
+                return 0;
+              }
+            `;
+            const fn = new Function('ctx', fnBody);
+            const result = fn(ctx);
+            
             point[s.dataKey] = typeof result === 'number' && isFinite(result) ? Math.round(result) : 0;
-          } catch {
+          } catch (err) {
+            console.error(`Chart Calculation Error [${s.dataKey}]:`, err);
             point[s.dataKey] = 0;
           }
         }

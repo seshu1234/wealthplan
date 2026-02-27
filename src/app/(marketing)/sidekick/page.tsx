@@ -3,13 +3,11 @@
 import { useState, useEffect, useRef } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { 
-  Send, Brain, Sparkles, Calculator, ShieldCheck, 
-  ArrowRight, Search, Landmark, TrendingUp, History,
-  PlusCircle, Lightbulb, MessageSquare
+  Send, Brain, Sparkles, ShieldCheck, History,
+  PlusCircle, MessageSquare, Loader2
 } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
-import { Card } from '@/components/ui/card'
 import Link from 'next/link'
 
 interface Message {
