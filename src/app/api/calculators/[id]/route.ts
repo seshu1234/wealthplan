@@ -70,6 +70,11 @@ export async function DELETE(_req: NextRequest, { params }: Params) {
 
   const { id } = await params
   const supabase = createAdminClient()
+
+  // 1. Delete associated tags first (to avoid FK constraint issues)
+  await supabase.from('calculator_tags').delete().eq('calculator_id', id)
+
+  // 2. Delete the calculator
   const { error } = await supabase.from('calculators').delete().eq('id', id)
 
   if (error) return NextResponse.json({ error: error.message }, { status: 500 })

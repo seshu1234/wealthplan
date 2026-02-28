@@ -144,84 +144,99 @@ export function executeCalculation(
     });
   });
 
+  // 1. Pre-scan all formulas to identify every variable used
+  const allFormulas = [
+    ...(config.outputs?.map(o => o.formula || logic.formula) || []),
+    ...(config.charts?.flatMap(c => c.series.map(s => s.formula)) || [])
+  ];
+  
+  const variableRegex = /\b([a-zA-Z_$][a-zA-Z0-9_$]*)\b/g;
+  const discoveredVars = new Set<string>();
+  allFormulas.forEach(f => {
+    if (!f) return;
+    let match;
+    while ((match = variableRegex.exec(f)) !== null) {
+      discoveredVars.add(match[1]);
+    }
+  });
+
+  // Remove common JS keywords and built-ins from discovered variables
+  const jsBuiltIns = new Set(['Math', 'Number', 'Array', 'ctx', 'i', 'undefined', 'null', 'NaN', 'scenario_irregular', 'scenario_step_up', 'scenario_lump_sum']);
+  discoveredVars.forEach(v => {
+    if (jsBuiltIns.has(v)) discoveredVars.delete(v);
+  });
+
+  // 2. Ensure ALL discovered variables exist in context (default to 0)
+  discoveredVars.forEach(v => {
+    if (currentContext[v] === undefined) {
+      currentContext[v] = 0;
+    }
+  });
   // 1. Calculate Outputs
   if (logic.type === 'formula') {
+    // Helper to evaluate formula in a sandbox
+    const evaluate = (formula: string, ctx: Record<string, number | string | boolean>) => {
+      try {
+        // Create a proxy that defaults to 0 for unknown variables
+        const proxy = new Proxy(ctx as Record<string, unknown>, {
+          get: (target, prop) => {
+            if (prop === 'Math') return Math;
+            if (prop === 'Number') return Number;
+            if (prop === 'ctx') return target;
+            if (prop in target) return target[prop as string];
+            // If it starts with scenario_, default to 0
+            if (typeof prop === 'string' && prop.startsWith('scenario_')) return 0;
+            return 0; // Default fallback
+          }
+        });
+        const fn = new Function('ctx', `with(ctx) { return Number(${formula}) }`);
+        const result = fn(proxy);
+        return typeof result === 'number' && isFinite(result) ? result : 0;
+      } catch {
+        return 0;
+      }
+    };
+
     for (const output of config.outputs) {
       const formula = (output.formula || logic.formula)?.trim();
       if (!formula) continue;
 
-      try {
-        const validVars = Object.keys(currentContext).filter(v => /^[a-zA-Z_$][0-9a-zA-Z_$]*$/.test(v));
-        // DEBUG LOG TO TRACE $0 RESULTS
-        if (output.id === 'total_value') {
-          console.log(`[Engine Debug] Context for total_value:`, JSON.stringify(currentContext));
-        }
-        
-        const fnBody = `
-          try {
-            const { ${validVars.join(', ')} } = ctx;
-            const res = Number(${formula});
-            return isNaN(res) ? 0 : res;
-          } catch (e) {
-            console.error('Inner Formula Error:', e);
-            return 0;
-          }
-        `;
-        const fn = new Function('ctx', fnBody);
-        const result = fn(currentContext);
-        
-        if (result === undefined || isNaN(result as number)) {
-          console.warn(`[Engine] Formula result is NaN or undefined for [${output.id}]:`, { result, formula, contextKeys: validVars });
-        }
-        
-        const finalVal = typeof result === 'number' && isFinite(result) ? result : 0;
-        outputs[output.id] = finalVal;
-        
-        // Add THIS output to context so LATER outputs can use it!
-        // Trim ID to prevent ReferenceErrors if DB has trailing spaces
-        currentContext[output.id.trim()] = finalVal;
-      } catch (err) {
-        console.error(`Calculation Error in output [${output.id}]:`, err, { formula });
-        outputs[output.id] = 0;
-        // MUST add to context even on failure to prevent ReferenceErrors in dependent formulas
-        currentContext[output.id] = 0;
-      }
+      const result = evaluate(formula, currentContext as Record<string, number | string | boolean>);
+      outputs[output.id] = result;
+      currentContext[output.id] = result;
     }
   }
 
   // 2. Generate Chart Data
   if (config.charts) {
     for (const chart of config.charts) {
-      const loopMax = Number(values[chart.loopKey]) || 0;
-      if (loopMax <= 0 || loopMax > 100) continue; // Safety limits
+      const loopMax = Number(currentContext[chart.loopKey]) || 0;
+      if (loopMax <= 0 || loopMax > 120) continue;
 
       const data: Record<string, number | string>[] = [];
       for (let i = 1; i <= loopMax; i++) {
         const point: Record<string, number | string> = { [chart.loopKey]: i };
-        const ctx = { ...currentContext, i };
-        const validVars = Object.keys(ctx).filter(v => /^[a-zA-Z_$][0-9a-zA-Z_$]*$/.test(v));
-        
+        const ctx: Record<string, unknown> = { ...currentContext as Record<string, unknown>, i };
         
         for (const s of chart.series) {
-          try {
-            const formula = s.formula?.trim();
-            if (!formula) continue;
+          const formula = s.formula?.trim();
+          if (!formula) continue;
 
-            // Reuse validVars from parent loop scope
-            const fnBody = `
-              try {
-                const { ${validVars.join(', ')} } = ctx;
-                return Number(${formula});
-              } catch (e) {
+          // Inline evaluation with proxy for charts
+          try {
+            const proxy = new Proxy(ctx, {
+              get: (target, prop) => {
+                if (prop === 'Math') return Math;
+                if (prop === 'Number') return Number;
+                if (prop === 'i') return target.i;
+                if (prop in target) return target[prop as string];
                 return 0;
               }
-            `;
-            const fn = new Function('ctx', fnBody);
-            const result = fn(ctx);
-            
+            });
+            const fn = new Function('ctx', `with(ctx) { return Number(${formula}) }`);
+            const result = fn(proxy);
             point[s.dataKey] = typeof result === 'number' && isFinite(result) ? Math.round(result) : 0;
-          } catch (err) {
-            console.error(`Chart Calculation Error [${s.dataKey}]:`, err);
+          } catch {
             point[s.dataKey] = 0;
           }
         }

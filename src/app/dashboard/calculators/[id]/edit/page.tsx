@@ -57,7 +57,11 @@ const calculatorSchema = z.object({
     }),
     outputs: z.array(z.any()),
     charts: z.array(z.any()).optional(),
-  }),
+    currency: z.string().optional(),
+    scenarios: z.array(z.any()).optional(),
+    whatIf: z.any().optional(),
+    healthIntegration: z.any().optional(),
+  }).passthrough(),
   content: z.any().optional(),
 })
 

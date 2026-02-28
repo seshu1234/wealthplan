@@ -6,24 +6,29 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert'
 import { InfoIcon } from 'lucide-react'
 
+interface LogicValue {
+  type: 'formula' | 'preset'
+  formula?: string
+  presetId?: string
+}
+
 interface LogicBuilderProps {
-  value: {
-    type: 'formula' | 'preset'
-    formula?: string
-    presetId?: string
-  }
-  onChange: (value: any) => void
+  value: LogicValue
+  onChange: (value: LogicValue) => void
   availableVariables: string[]
 }
 
 export function LogicBuilder({ value, onChange, availableVariables }: LogicBuilderProps) {
+  // Add safety check for undefined value
+  const safeValue = value || { type: 'formula', formula: '' };
+
   return (
     <div className="space-y-6">
       <div className="space-y-4">
         <Label>Calculation Method</Label>
         <Select 
-          value={value.type} 
-          onValueChange={(val: any) => onChange({ ...value, type: val })}
+          value={safeValue.type} 
+          onValueChange={(val: string) => onChange({ ...safeValue, type: val as LogicValue['type'] })}
         >
           <SelectTrigger>
             <SelectValue />
@@ -35,13 +40,13 @@ export function LogicBuilder({ value, onChange, availableVariables }: LogicBuild
         </Select>
       </div>
 
-      {value.type === 'formula' ? (
+      {safeValue.type === 'formula' ? (
         <div className="space-y-4">
           <div className="space-y-2">
             <Label>Mathematical Formula</Label>
             <Textarea
-              value={value.formula}
-              onChange={(e) => onChange({ ...value, formula: e.target.value })}
+              value={safeValue.formula}
+              onChange={(e) => onChange({ ...safeValue, formula: e.target.value })}
               placeholder="e.g., principal * Math.pow(1 + rate/100, years)"
               className="font-mono h-32"
             />
@@ -70,8 +75,8 @@ export function LogicBuilder({ value, onChange, availableVariables }: LogicBuild
         <div className="space-y-4">
           <Label>Select Template</Label>
           <Select 
-            value={value.presetId} 
-            onValueChange={(val: any) => onChange({ ...value, presetId: val })}
+            value={safeValue.presetId} 
+            onValueChange={(val: string) => onChange({ ...safeValue, presetId: val })}
           >
             <SelectTrigger>
               <SelectValue placeholder="Choose a preset..." />
